@@ -11,7 +11,7 @@ export default function HomeScreen() {
       <StatusBar style="auto" />
       
       <View style={styles.header}>
-        <Text style={styles.greeting}>Witaj, {user?.username}!</Text>
+        <Text style={styles.greeting}>Witaj, {user?.firstname}!</Text>
         <Text style={styles.subtitle}>Co nowego dzisiaj?</Text>
       </View>
       
@@ -19,7 +19,7 @@ export default function HomeScreen() {
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Główny ekran aplikacji</Text>
           <Text style={styles.cardText}>
-            Jesteś zalogowany jako użytkownik: {user?.username}
+            Jesteś zalogowany jako użytkownik: {user?.firstname}
           </Text>
           <Text style={styles.cardText}>
             Email: {user?.email}

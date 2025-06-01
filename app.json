@@ -45,8 +45,7 @@
       "eas": {
         "projectId": "5f71a653-d3fd-4294-819e-39275798243a"
       }
-    },
-    "sdkVersion": "52.0.0"
+    }
   },
   "name": "mood_dic"
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, Image } from 'react-native';
 
-export default function OfflineScreen() {
+export default function Offline() {
     console.log('Offline screen');
     return (
         <View style={styles.container}>

@@ -2,13 +2,13 @@ import React from "react";
 import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
 import offline from "@/app/(auth)/offline";
 import { router } from "expo-router";
-import { ACTIVE_ENV } from "@/config/appConfig";
+import { APP_CONFIG } from "@/config/appConfig";
 import { Drawer } from 'expo-router/drawer';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function testComponents() {
     const DevButton = () => {
-      if (ACTIVE_ENV !== 'dev') return null;
+      if ( APP_CONFIG.ENVIRONMENT !== 'dev') return null;
       
       return (
         <View>

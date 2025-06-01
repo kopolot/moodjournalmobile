@@ -44,7 +44,7 @@ const environments: Record<string, EnvironmentConfig> = {
 };
 
 // Określenie aktywnego środowiska na podstawie konfiguracji Expo
-export const ACTIVE_ENV = Constants.expoConfig?.extra?.environment || 'dev';
+const ACTIVE_ENV = Constants.expoConfig?.extra?.environment || 'dev';
 
 // Logowanie aktywnego środowiska (tylko w trybie dev)
 if (__DEV__) {
@@ -115,4 +115,7 @@ export const APP_CONFIG = {
     LOAD_TIMEOUT: 30000, // 30 sekund
     DEFAULT_TRANSITION: 'ease',
   },
+  DEV: {
+    // FORCE_OFFLINE: true
+  }
 };

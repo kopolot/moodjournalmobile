@@ -53,7 +53,11 @@ describe('AuthContext - testy integracyjne', () => {
       ( NetInfo.fetch as jest.Mock).mockResolvedValue({
         isConnected: false
       });
-      
+      ( NetInfo.addEventListener as jest.Mock).mockImplementation((callback) => {
+        // callback({ isConnected: false });
+        return jest.fn();
+      });
+
       // Renderowanie hooka w kontekście
       const { result } = renderHook(() => useAuth(), { wrapper });
       
@@ -79,9 +83,14 @@ describe('AuthContext - testy integracyjne', () => {
       // Ustawienie mocków AuthService
       (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(true);
       (NetInfo.fetch as jest.Mock).mockResolvedValue({
-        isConnected: true
+        isConnected: true,
+        isInternetReachable: true
       });
       (AuthService.loadCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+      ( NetInfo.addEventListener as jest.Mock).mockImplementation((callback) => {
+        // callback({ isConnected: true, isInternetReachable: true });
+        return jest.fn();
+      });
       
       // Renderowanie hooka w kontekście
       const { result } = renderHook(() => useAuth(), { wrapper });

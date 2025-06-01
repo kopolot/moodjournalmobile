@@ -1,13 +1,21 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, Image, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '@/contexts/AuthContext';
+import useStyles from '@/hooks/useStyles';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import useAuthStyles from '@/styles/authStyles';
 
 export default function LoginScreen() {
-  const { login, isLoading } = useAuth();
+  const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { forms, buttons } = useStyles();
+  const textColor = useThemeColor({}, 'text');
+  const linkColor = useThemeColor({}, 'link');
+  const styles = useAuthStyles();
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -17,22 +25,25 @@ export default function LoginScreen() {
 
     try {
       // tutaj trzeba logikę verify dodać
+      setIsLoading(true);
       const success = await login(email, password, true);
       if (!success) {
         Alert.alert('Błąd logowania', 'Nieprawidłowe dane logowania. Spróbuj ponownie.');
       }
     } catch (error) {
       console.error('Login error:', error);
-      Alert.alert('Błąd', 'Wystąpił problem podczas logowania. Spróbuj ponownie.');
+      Alert.alert('Błąd', 'Wystąpił problem podczas logowania. Spróbuj ponownie.  ');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <StatusBar style="auto" />
-      
+
       <View style={styles.logoContainer}>
-        <Image 
+        <Image
           source={require('@/assets/images/icon.png')}
           style={styles.logo}
           resizeMode="contain"
@@ -45,134 +56,47 @@ export default function LoginScreen() {
         <Text style={styles.subtitle}>Zaloguj się, aby kontynuować</Text>
 
         <TextInput
-          style={styles.input}
+          style={forms.input}
           placeholder="Email"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
           editable={!isLoading}
+          placeholderTextColor={textColor}
         />
 
         <TextInput
-          style={styles.input}
+          style={forms.input}
           placeholder="Hasło"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
           editable={!isLoading}
+          placeholderTextColor={textColor}
         />
 
-        <TouchableOpacity 
-          style={[styles.button, isLoading && styles.buttonDisabled]} 
+        <TouchableOpacity
+          style={[buttons.primary, isLoading && buttons.disabled]}
           onPress={handleLogin}
           disabled={isLoading}
         >
           {isLoading ? (
             <ActivityIndicator color="#fff" size="small" />
           ) : (
-            <Text style={styles.buttonText}>Zaloguj się</Text>
+            <Text style={buttons.buttonText}>Zaloguj się</Text>
           )}
         </TouchableOpacity>
 
-        <View style={styles.registerContainer}>
-          <Text style={styles.registerText}>Nie masz jeszcze konta?</Text>
+        <View style={styles.bottomContainer}>
+          <Text style={{color: textColor}}>Nie masz jeszcze konta? </Text>
           <TouchableOpacity onPress={() => router.back()} disabled={isLoading}>
-            <Text style={[styles.registerLink, isLoading && styles.textDisabled]}>
+            <Text style={{color: linkColor}}>
               Zarejestruj się
             </Text>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-    padding: 20,
-  },
-  logoContainer: {
-    alignItems: 'center',
-    marginTop: 60,
-    marginBottom: 30,
-  },
-  logo: {
-    width: 80,
-    height: 80,
-  },
-  appName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginTop: 10,
-  },
-  formContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#777',
-    marginBottom: 30,
-  },
-  input: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: '#3498db',
-    borderRadius: 8,
-    padding: 15,
-    alignItems: 'center',
-    marginVertical: 10,
-    height: 50,
-    justifyContent: 'center',
-  },
-  buttonDisabled: {
-    backgroundColor: '#7fb6e1',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  registerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  registerText: {
-    color: '#777',
-    fontSize: 14,
-  },
-  registerLink: {
-    color: '#3498db',
-    fontSize: 14,
-    fontWeight: 'bold',
-    marginLeft: 5,
-  },
-  textDisabled: {
-    color: '#999',
-  },
-});

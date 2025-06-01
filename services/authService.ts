@@ -43,7 +43,7 @@ export class AuthService {
   /**
    * Rejestracja nowego użytkownika
    */
-  static async register(data: RegisterData): Promise<boolean> {
+  static async register(data: RegisterData): Promise<ApiResponse> {
     try {
       const response = await apiClient.post<ApiResponse>(
         API_CONFIG.ENDPOINTS.AUTH.REGISTER,
@@ -51,15 +51,13 @@ export class AuthService {
         { requiresAuth: false }
       );
 
-      if (response.success)
-        return true;
-      
       // Jeśli API zwróciło błąd
-      console.error('Registration failed:', response.error);
-      return false;
+      if (!response.success)
+        console.warn('Registration failed:', response.error);
+      return response;
     } catch (error) {
       console.error('Registration error:', error);
-      return false;
+      return { success: false, error: 'app.error' } as ApiResponse;
     }
   }
 
@@ -79,7 +77,7 @@ export class AuthService {
         await this.saveUserSession(response.data.jwt_token);
         return true;
       }
-      
+
       return false;
     } catch (error) {
       console.error('Login error:', error);
@@ -100,12 +98,12 @@ export class AuthService {
         // Ignorujemy błędy, ponieważ wylogowanie powinno działać
         // nawet jeśli serwer jest niedostępny
       }
-      
+
       // Usuń dane sesji lokalnie
       await AsyncStorage.multiRemove([
         STORAGE_CONFIG.USER_TOKEN_KEY
       ]);
-      
+
       return true;
     } catch (error) {
       console.error('Logout error:', error);
@@ -134,10 +132,10 @@ export class AuthService {
   static async loadCurrentUser(): Promise<User | null> {
     const userToken = await AsyncStorage.getItem(STORAGE_CONFIG.USER_TOKEN_KEY);
     if (!userToken) return null;
-    
-    const response = await apiClient.get<{ data: User}>(API_CONFIG.ENDPOINTS.USER.PROFILE);
 
-    if( response.success && response.data){
+    const response = await apiClient.get<{ data: User }>(API_CONFIG.ENDPOINTS.USER.PROFILE);
+
+    if (response.success && response.data) {
       return response.data;
     }
 
@@ -151,7 +149,7 @@ export class AuthService {
     try {
       const userData = await AsyncStorage.getItem(STORAGE_CONFIG.USER_DATA_KEY);
       if (!userData) return null;
-        return JSON.parse(userData) as User;
+      return JSON.parse(userData) as User;
     } catch (error) {
       console.error('Get user error:', error);
       return null;
@@ -166,21 +164,21 @@ export class AuthService {
   static async refreshUserProfile(): Promise<User | null> {
     try {
       const response = await apiClient.get<{ user: User }>(API_CONFIG.ENDPOINTS.USER.PROFILE);
-      
+
       if (response.success && response.data?.user) {
         // Aktualizacja danych użytkownika w local storage
         const userData = response.data.user;
         await AsyncStorage.setItem(STORAGE_CONFIG.USER_TOKEN_KEY, JSON.stringify(userData));
         return userData;
       }
-      
+
       return null;
     } catch (error) {
       console.error('Refresh user profile error:', error);
       return null;
     }
   }
-  
+
   /**
    * Aktualizacja profilu użytkownika
    */
@@ -190,21 +188,21 @@ export class AuthService {
         API_CONFIG.ENDPOINTS.USER.UPDATE_PROFILE,
         userData
       );
-      
+
       if (response.success && response.data?.user) {
         // Aktualizacja danych użytkownika w local storage
         const updatedUser = response.data.user;
         await AsyncStorage.setItem(STORAGE_CONFIG.USER_TOKEN_KEY, JSON.stringify(updatedUser));
         return updatedUser;
       }
-      
+
       return null;
     } catch (error) {
       console.error('Update profile error:', error);
       return null;
     }
   }
-  
+
   /**
    * Zmiana hasła użytkownika
    */
@@ -217,7 +215,7 @@ export class AuthService {
         API_CONFIG.ENDPOINTS.USER.CHANGE_PASSWORD,
         { currentPassword, newPassword }
       );
-      
+
       return response.success;
     } catch (error) {
       console.error('Change password error:', error);
@@ -228,7 +226,7 @@ export class AuthService {
   /**
    * Zapisanie danych sesji użytkownika
    */
-  private static async saveUserSession(token: string ): Promise<void> {
+  private static async saveUserSession(token: string): Promise<void> {
     try {
       // Zapisz token
       await AsyncStorage.setItem(STORAGE_CONFIG.USER_TOKEN_KEY, token);
@@ -238,7 +236,7 @@ export class AuthService {
     }
   }
 
-  private static async saveUserData( user: User): Promise<void> {
+  private static async saveUserData(user: User): Promise<void> {
     try {
       // Zapisz dane użytkownika
       await AsyncStorage.setItem(STORAGE_CONFIG.USER_DATA_KEY, JSON.stringify(user));

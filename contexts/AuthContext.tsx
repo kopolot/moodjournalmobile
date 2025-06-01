@@ -1,13 +1,14 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { AuthService, User } from '@/services/authService';
 import NetInfo, { NetInfoState} from '@react-native-community/netinfo';
+import { APP_CONFIG } from '@/config/appConfig';
+import { ApiResponse } from '@/services/apiClient';
 
 interface AuthContextType {
   isLoggedIn: boolean;
   user: User | null;
-  isLoading: boolean;
   login: (email: string, password: string, remember_me: boolean) => Promise<boolean>;
-  register: ( email: string, password: string, repeatPassword: string, firstname: string, acceptPrivacyPolicy: boolean) => Promise<boolean>;
+  register: ( email: string, password: string, repeatPassword: string, firstname: string, acceptPrivacyPolicy: boolean) => Promise<ApiResponse>;
   logout: () => Promise<void>;
   isConnected: boolean;
 }
@@ -29,11 +30,10 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
 
   const checkAuth = async () => {
-    setIsLoading(true);
+    
     try {
       const isAuthenticated = await AuthService.isAuthenticated();
       if (isAuthenticated) {
@@ -57,14 +57,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(null);
       setIsLoggedIn(false);
     } finally {
-      setIsLoading(false);
+      
     }
   };
 
   useEffect(() => {
+    
     const changeConnectionStatus = ( state: NetInfoState) => {
-      console.log('Connection status changed:', state);
-      setIsConnected( state.isConnected && state.isInternetReachable || false);
+      if( __DEV__ && APP_CONFIG.DEV.FORCE_OFFLINE){
+        setIsConnected(false);
+      }else
+        setIsConnected( state.isConnected && state.isInternetReachable || false);
     }
 
     // initial check
@@ -80,7 +83,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   const login = async (email: string, password: string, remember_me: boolean) => {
-    setIsLoading(true);
+    
     try {
       const success = await AuthService.login({ email, password, remember_me });
       if (success) {
@@ -94,31 +97,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error('Login error:', error);
       throw error
     } finally {
-      setIsLoading(false);
+      
     }
   };
 
-  const register = async (email: string, password: string, repeatPassword: string, firstname: string, acceptPrivacyPolicy: boolean) => {
-    setIsLoading(true);
+  const register = async (email: string, password: string, repeatPassword: string, firstname: string, acceptPrivacyPolicy: boolean): Promise<ApiResponse> => {
+
     try {
-      const success = await AuthService.register({
+      const response = await AuthService.register({
         firstname,
         email,
         password,
         repeatPassword,
         acceptPrivacyPolicy
        });
-      return success;
+      return response;
     } catch (error) {
       console.error('Register error:', error);
-      return false;
+      return { success: false, error: 'app.error' } as ApiResponse;
     } finally {
-      setIsLoading(false);
+      
     }
   };
 
   const logout = async () => {
-    setIsLoading(true);
+    
     try {
       await AuthService.logout();
       setUser(null);
@@ -126,7 +129,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      setIsLoading(false);
+      
     }
   };
 
@@ -135,7 +138,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       value={{
         isLoggedIn,
         user,
-        isLoading,
         login,
         register,
         logout,

@@ -1,0 +1,50 @@
+{
+    "register":{
+        "title": "Register",
+        "subtitle": "Create a new account",
+        "firstname": "First Name",
+        "email": "Email",
+        "password": "Password",
+        "repeatPassword": "Confirm Password",
+        "submit": "Register",
+        "success": "Registration successful! Please check your email to verify your account.",
+        "privacyPolicy": "I accept the terms and conditions",
+        "alreadyHaveAccount": "Already have an account? Log in here",
+        "login": "Login",
+        "errorFields" : "Please fill in all fields correctly.",
+        "passwordMismatch": "Passwords do not match.",
+        "privacyPolicyError": "You must accept the privacy policy.",
+        "error": "An error occurred during registration. Please try again later.",
+    },
+    "error": "Error",
+    "success": "Success",
+    "app":{
+        "error": "An error occurred. Please contact support.",
+    },
+    "user":{
+        "registration":{
+            
+            "success": "Registration successful! Please check your email to verify your account.",
+            "failed": "Registration failed.",
+        },
+        "fitst_name":{
+            "not_blank": "First name cannot be blank.",
+            "length": "First name must be between 2 and 50 characters.",
+        },
+        "email":{
+            "not_blank": "Email cannot be blank.",
+            "invalid": "Email is not valid.",
+        },
+        "password":{
+            "not_blank": "Password cannot be blank.",
+            "length": "Password must be at least 6 characters long.",
+        },
+        "repeat_password":{
+            "not_blank": "Confirm password cannot be blank.",
+            "not_match": "Passwords do not match.",
+        },
+        "privacy_policy":{
+            "not_accepted": "You must accept the privacy policy.",
+        },
+    }
+}

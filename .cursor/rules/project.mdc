@@ -1,0 +1,14 @@
+---
+description: MoodJournal mobile — project status and invariants
+alwaysApply: true
+---
+
+# MoodJournal Mobile
+
+Abandoned Expo SDK 57 portfolio client. API lives in `moodjournal` on GitHub.
+
+- Mood UI is local-only; there is no journal API.
+- Use Expo Router navigation helpers — never import `@react-navigation/*` in app code.
+- Prefer `npm start` (LAN) or `npm run start:offline` for device work.
+- Resolve API URL via `config/appConfig.ts` / `EXPO_PUBLIC_API_URL` (port 8080).
+- No project-scoped MCP required.

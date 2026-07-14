@@ -1,0 +1,14 @@
+---
+description: Expo Router and React Native conventions
+globs: app/**/*.{tsx,ts},components/**/*.{tsx,ts},services/**/*.{ts,tsx},config/**/*.ts
+alwaysApply: false
+---
+
+# Expo Router / RN
+
+- Navigation themes/helpers: `expo-router/react-navigation`
+- Bottom-tab helpers/types: `expo-router/js-tabs`
+- Drawer layout: `expo-router/drawer`
+- Alerts that must work on web: `utils/alert.ts` → `showAlert`
+- Auth token storage and `/user/*` paths go through `services/authService.ts`
+- Do not add cards/dashboard chrome to unfinished screens without an explicit design ask

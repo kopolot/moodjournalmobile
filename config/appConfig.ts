@@ -3,7 +3,58 @@
  * Zawiera ustawienia globalne, adresy URL API i inne stałe
  */
 
+import { Platform } from 'react-native';
 import Constants from 'expo-constants';
+
+const DEV_API_PORT = 8080;
+
+/**
+ * Host maszyny developerskiej widziany przez Expo/Metro
+ * (działający telefon / Expo Go / emulator z tunelowaniem LAN).
+ */
+function getExpoDevHost(): string | null {
+  const hostUri =
+    Constants.expoConfig?.hostUri ??
+    (Constants as { manifest2?: { extra?: { expoGo?: { debuggerHost?: string } } } })
+      .manifest2?.extra?.expoGo?.debuggerHost ??
+    (Constants as { manifest?: { debuggerHost?: string } }).manifest?.debuggerHost;
+
+  if (!hostUri || typeof hostUri !== 'string') {
+    return null;
+  }
+
+  const host = hostUri.split(':')[0]?.trim();
+  if (!host || host === '127.0.0.1' || host === 'localhost') {
+    return null;
+  }
+
+  return host;
+}
+
+/**
+ * Bazowy URL API w środowisku deweloperskim.
+ * - EXPO_PUBLIC_API_URL — jawny override
+ * - host z Metro/Expo — telefon / fizyczne urządzenie / LAN
+ * - Android emulator → 10.0.2.2 (host loopback)
+ * - iOS simulator / web → localhost
+ */
+function resolveDevApiUrl(): string {
+  const fromEnv = process.env.EXPO_PUBLIC_API_URL?.trim();
+  if (fromEnv) {
+    return fromEnv.replace(/\/$/, '');
+  }
+
+  const expoHost = getExpoDevHost();
+  if (expoHost) {
+    return `http://${expoHost}:${DEV_API_PORT}`;
+  }
+
+  if (Platform.OS === 'android') {
+    return `http://10.0.2.2:${DEV_API_PORT}`;
+  }
+
+  return `http://localhost:${DEV_API_PORT}`;
+}
 
 // Konfiguracja środowisk
 interface EnvironmentConfig {
@@ -18,8 +69,8 @@ interface EnvironmentConfig {
 // Konfiguracje dla różnych środowisk
 const environments: Record<string, EnvironmentConfig> = {
   dev: {
-    API_URL: 'http://local.moodjournal.com',
-    API_TIMEOUT: 10000, // 10 sekund
+    API_URL: resolveDevApiUrl(),
+    API_TIMEOUT: 10000,
     AUTH_TOKEN_KEY: '',
     USER_DATA_KEY: 'mood_app_user_data',
     USER_TOKEN_KEY: 'mood_app_user_token',
@@ -27,7 +78,7 @@ const environments: Record<string, EnvironmentConfig> = {
   },
   stage: {
     API_URL: 'https://api-staging.moodapp.example.com/v1',
-    API_TIMEOUT: 15000, // 15 sekund
+    API_TIMEOUT: 15000,
     AUTH_TOKEN_KEY: 'mood_app_auth_token',
     USER_DATA_KEY: 'mood_app_user_data',
     USER_TOKEN_KEY: 'mood_app_user_token',
@@ -35,7 +86,7 @@ const environments: Record<string, EnvironmentConfig> = {
   },
   prod: {
     API_URL: 'https://api.moodapp.example.com/v1',
-    API_TIMEOUT: 30000, // 30 sekund
+    API_TIMEOUT: 30000,
     AUTH_TOKEN_KEY: 'mood_app_auth_token',
     USER_DATA_KEY: 'mood_app_user_data',
     USER_TOKEN_KEY: 'mood_app_user_token',
@@ -58,10 +109,10 @@ if (__DEV__) {
 export const API_CONFIG = {
   // Bazowy URL API
   BASE_URL: environments[ACTIVE_ENV].API_URL,
-  
+
   // Timeout dla żądań (w milisekundach)
   TIMEOUT: environments[ACTIVE_ENV].API_TIMEOUT,
-  
+
   // Ścieżki do endpointów API
   ENDPOINTS: {
     AUTH: {
@@ -73,21 +124,17 @@ export const API_CONFIG = {
       RESET_PASSWORD: 'user/resetpassword',
     },
     USER: {
-        PROFILE: '/user/get',
-        UPDATE_PROFILE: '',
-        CHANGE_PASSWORD: '',
-        
+      PROFILE: '/user/get',
+      UPDATE_PROFILE: '',
+      CHANGE_PASSWORD: '',
     },
-    CONTENT: {
-
-    },
+    CONTENT: {},
   },
-  
+
   // Nagłówki HTTP
   HEADERS: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    // 'Authorization': `Bearer ${environments[ACTIVE_ENV].AUTH_TOKEN_KEY}`,
+    Accept: 'application/json',
     'X-Api-Key': environments[ACTIVE_ENV].AUTH_TOKEN_KEY,
   },
 };
@@ -96,8 +143,8 @@ export const API_CONFIG = {
  * Konfiguracja lokalnego przechowywania danych
  */
 export const STORAGE_CONFIG = {
-    USER_DATA_KEY: environments[ACTIVE_ENV].USER_DATA_KEY,
-    USER_TOKEN_KEY: environments[ACTIVE_ENV].USER_TOKEN_KEY,
+  USER_DATA_KEY: environments[ACTIVE_ENV].USER_DATA_KEY,
+  USER_TOKEN_KEY: environments[ACTIVE_ENV].USER_TOKEN_KEY,
 };
 
 /**
@@ -108,7 +155,7 @@ export const APP_CONFIG = {
   VERSION: '0.0.0',
   APP_NAME: 'Mood App',
   ENVIRONMENT: ACTIVE_ENV,
-  
+
   // Ustawienia związane z UI
   UI: {
     ANIMATION_DURATION: 300, // ms
@@ -117,5 +164,9 @@ export const APP_CONFIG = {
   },
   DEV: {
     // FORCE_OFFLINE: true
-  }
+  },
+};
+
+export const APP_LOGIC_CONFIG = {
+  specificMoods: ['mood', 'relationship', 'activity', 'environment'],
 };

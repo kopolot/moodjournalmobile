@@ -7,7 +7,7 @@ import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
  */
 export interface ApiResponse<T = any> {
   success: boolean;
-  data: Array<T>;
+  data: object | Array<T>;
   error: string;
   message?: Array<string>;
 }
@@ -103,12 +103,22 @@ class ApiClient {
             message: responseData.message || ['error'],
           };
         } else if (error.request) {
-          // Żądanie zostało wysłane, ale nie otrzymano odpowiedzi
-          console.error('No response received:', error.request);
-          throw error;
+          // Żądanie wysłane, brak odpowiedzi (sieć / CORS / offline)
+          console.error('No response received:', error.message);
+          return {
+            success: false,
+            data: [],
+            error: 'NETWORK_ERROR',
+            message: ['login.error'],
+          };
         } else {
           console.error('Error setting up request:', error.message);
-          throw error;
+          return {
+            success: false,
+            data: [],
+            error: 'REQUEST_ERROR',
+            message: ['login.error'],
+          };
         }
       }
       

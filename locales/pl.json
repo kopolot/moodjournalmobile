@@ -1,8 +1,8 @@
 {
     "register":{
-        "title": "Rejestracja",
-        "subtitle": "Utwórz nowe konto",
-        "firstname": "Imię",
+        "title": "Register",
+        "subtitle": "Create a new account",
+        "firstname": "First Name",
         "email": "Email",
         "password": "Password",
         "repeatPassword": "Confirm Password",
@@ -23,9 +23,9 @@
     },
     "user":{
         "registration":{
+            
             "success": "Registration successful! Please check your email to verify your account.",
             "failed": "Registration failed.",
-
         },
         "fitst_name":{
             "not_blank": "First name cannot be blank.",

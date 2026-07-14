@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, Image } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, Text } from 'react-native';
+import { useI18n } from '@/contexts/I18nContext';
 
 export default function Offline() {
+    const { t } = useI18n();
     console.log('Offline screen');
     return (
         <View style={styles.container}>
-            <Text>Brak połączenia z internetem :(</Text>
-            {/* <Button title="Spróbuj ponownie" onPress={() => router.push('/(auth)/login')} /> */}
+            <Text>{t('app.offline.title')}</Text>
         </View>
     );
 }

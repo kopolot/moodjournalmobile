@@ -1,11 +1,13 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, Image, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Image, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '@/contexts/AuthContext';
 import useStyles from '@/hooks/useStyles';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import useAuthStyles from '@/styles/authStyles';
+import { useI18n } from '@/contexts/I18nContext';
+import { showAlert } from '@/utils/alert';
 
 export default function LoginScreen() {
   const { login } = useAuth();
@@ -16,27 +18,33 @@ export default function LoginScreen() {
   const textColor = useThemeColor({}, 'text');
   const linkColor = useThemeColor({}, 'link');
   const styles = useAuthStyles();
+  const { t } = useI18n();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Błąd', 'Proszę wypełnić wszystkie pola');
+      showAlert(t('error'), t('login.errorFields'));
       return;
     }
 
     try {
-      // tutaj trzeba logikę verify dodać
       setIsLoading(true);
-      const success = await login(email, password, true);
-      if (!success) {
-        Alert.alert('Błąd logowania', 'Nieprawidłowe dane logowania. Spróbuj ponownie.');
+      const response = await login(email, password, true);
+      if (!response.success) {
+        showAlert(
+          t('error'),
+          t(response.message?.[0] || 'login.error')
+        );
       }
     } catch (error) {
       console.error('Login error:', error);
-      Alert.alert('Błąd', 'Wystąpił problem podczas logowania. Spróbuj ponownie.  ');
+      showAlert(t('error'), t('login.error'));
     } finally {
       setIsLoading(false);
     }
   };
+
+  const i18nEmail = t('login.email');
+  const i18nPassword = t('login.password');
 
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
@@ -52,12 +60,12 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.formContainer}>
-        <Text style={styles.title}>Witaj ponownie!</Text>
-        <Text style={styles.subtitle}>Zaloguj się, aby kontynuować</Text>
+        <Text style={styles.title}>{t('login.title')}</Text>
+        <Text style={styles.subtitle}>{t('login.subtitle')}</Text>
 
         <TextInput
           style={forms.input}
-          placeholder="Email"
+          placeholder={i18nEmail}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -68,7 +76,7 @@ export default function LoginScreen() {
 
         <TextInput
           style={forms.input}
-          placeholder="Hasło"
+          placeholder={i18nPassword}
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -84,15 +92,15 @@ export default function LoginScreen() {
           {isLoading ? (
             <ActivityIndicator color="#fff" size="small" />
           ) : (
-            <Text style={buttons.buttonText}>Zaloguj się</Text>
+            <Text style={buttons.buttonText}>{t('login.submit')}</Text>
           )}
         </TouchableOpacity>
 
         <View style={styles.bottomContainer}>
-          <Text style={{color: textColor}}>Nie masz jeszcze konta? </Text>
+          <Text style={{ color: textColor }}>{t('login.noAccount')} </Text>
           <TouchableOpacity onPress={() => router.back()} disabled={isLoading}>
-            <Text style={{color: linkColor}}>
-              Zarejestruj się
+            <Text style={{ color: linkColor }}>
+              {t('login.register')}
             </Text>
           </TouchableOpacity>
         </View>

@@ -16,18 +16,40 @@
         "privacyPolicyError": "You must accept the privacy policy.",
         "error": "An error occurred during registration. Please try again later.",
     },
+    "login":{
+        "errorFields": "Please fill in all fields correctly.",
+        "error":"An error occurred during login. Please try again later.",
+        "title": "Login",
+        "subtitle": "Welcome back! Please log in to your account",
+        "email": "Email",
+        "password": "Password",
+        "submit": "Login",
+        "forgotPassword": "Forgot your password?",
+        "noAccount": "Don't have an account?",
+        "register": "Register here",
+    },
     "error": "Error",
     "success": "Success",
     "app":{
         "error": "An error occurred. Please contact support.",
+        "offline": {
+            "title": "You are offline",
+        }
     },
     "user":{
         "registration":{
-            
             "success": "Registration successful! Please check your email to verify your account.",
             "failed": "Registration failed.",
         },
-        "fitst_name":{
+        "login":{
+            "success": "Login successful! Welcome back.",
+            "failed": "Login failed. Please check your credentials.",
+        },
+        "not_found": "User not found.",
+        "session":{
+            "not_found": "Session not found.",
+        },
+        "first_name":{
             "not_blank": "First name cannot be blank.",
             "length": "First name must be between 2 and 50 characters.",
         },

@@ -7,7 +7,7 @@ import { ApiResponse } from '@/services/apiClient';
 interface AuthContextType {
   isLoggedIn: boolean;
   user: User | null;
-  login: (email: string, password: string, remember_me: boolean) => Promise<boolean>;
+  login: (email: string, password: string, remember_me: boolean) => Promise<ApiResponse>;
   register: ( email: string, password: string, repeatPassword: string, firstname: string, acceptPrivacyPolicy: boolean) => Promise<ApiResponse>;
   logout: () => Promise<void>;
   isConnected: boolean;
@@ -82,22 +82,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, []);
 
-  const login = async (email: string, password: string, remember_me: boolean) => {
+  const login = async (email: string, password: string, remember_me: boolean): Promise<ApiResponse> => {
     
     try {
-      const success = await AuthService.login({ email, password, remember_me });
-      if (success) {
+      const response = await AuthService.login({ email, password, remember_me });
+      if (response.success) {
         const userData = await AuthService.loadCurrentUser();
         setUser(userData);
-        setIsLoggedIn(true);
-        return true;
+        setIsLoggedIn(true);;
       }
-      return false;
+      return response;
     } catch (error) {
       console.error('Login error:', error);
       throw error
-    } finally {
-      
     }
   };
 

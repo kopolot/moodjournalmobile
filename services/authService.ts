@@ -64,7 +64,7 @@ export class AuthService {
   /**
    * Logowanie użytkownika
    */
-  static async login(data: LoginData): Promise<boolean> {
+  static async login(data: LoginData): Promise<ApiResponse> {
     try {
       const response = await apiClient.post(
         API_CONFIG.ENDPOINTS.AUTH.LOGIN,
@@ -75,10 +75,9 @@ export class AuthService {
       if (response.success && response.data) {
         // Zapisz dane sesji użytkownika
         await this.saveUserSession(response.data.jwt_token);
-        return true;
       }
 
-      return false;
+      return response;
     } catch (error) {
       console.error('Login error:', error);
       throw error
@@ -136,7 +135,7 @@ export class AuthService {
     const response = await apiClient.get<{ data: User }>(API_CONFIG.ENDPOINTS.USER.PROFILE);
 
     if (response.success && response.data) {
-      return response.data;
+      return response.data as User;
     }
 
     return null;

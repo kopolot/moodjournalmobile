@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { View, Text, TextInput, Alert, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '@/contexts/AuthContext';
 import useStyles from '@/hooks/useStyles';
@@ -8,6 +8,7 @@ import Checkbox from '@/components/form/Checkbox';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import useAuthStyles from '@/styles/authStyles';
 import { useI18n } from '@/contexts/I18nContext';
+import { showAlert } from '@/utils/alert';
 
 export default function RegisterScreen() {
   const { register } = useAuth();
@@ -26,35 +27,34 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     if (!firstname || !email || !password || !repeatPassword) {
-      Alert.alert(t('error'), t('register.errorFields'));
+      showAlert(t('error'), t('register.errorFields'));
       return;
     }
 
     if (password !== repeatPassword) {
-      Alert.alert(t('error'), t('register.passwordMismatch'));
+      showAlert(t('error'), t('register.passwordMismatch'));
       return;
     }
 
-    if( !acceptPrivacyPolicy){
-      Alert.alert(t('error'), t('register.privacyPolicyError'));
+    if (!acceptPrivacyPolicy) {
+      showAlert(t('error'), t('register.privacyPolicyError'));
       return;
     }
-    
+
     try {
+      setIsLoading(true);
       const response = await register(email, password, repeatPassword, firstname, acceptPrivacyPolicy);
       if (response.success) {
-        Alert.alert(
-          t('success'),
-          t( response.message?.[0] || 'register.success'),
-          [{ text: 'OK', onPress: () => router.replace('/') }]
-        );
+        showAlert(t('success'), t(response.message?.[0] || 'register.success'));
         router.replace('/(auth)/login');
       } else {
-        Alert.alert(t('error'), t( response.message?.[0] || 'register.error'));
+        showAlert(t('error'), t(response.message?.[0] || 'register.error'));
       }
     } catch (error) {
       console.error('Registration error:', error);
-      Alert.alert(t('error'), t('register.error'));
+      showAlert(t('error'), t('register.error'));
+    } finally {
+      setIsLoading(false);
     }
   };
 

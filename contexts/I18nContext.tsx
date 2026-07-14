@@ -17,11 +17,10 @@ const resources = {
 }
 
 // Inicjalizacja i18next
-i18n
-    .use(initReactI18next)
+i18n.use(initReactI18next)
     .init({
         resources,
-        lng: 'en', // domyślny język
+        lng: 'en',
         fallbackLng: 'en',
     });
 

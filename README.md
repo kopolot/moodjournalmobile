@@ -1,12 +1,12 @@
-# MoodJournal Mobile
+# MoodDic Mobile
 
-> **Status: abandoned example / portfolio snippet**  
-> Expo / React Native client for an unfinished mood-tracking idea.  
-> **Not production-ready**, not maintained.
+> **Status: active prototype / portfolio project**  
+> Expo / React Native client for MoodDic — gamified mood check-ins synced to the Symfony API.  
+> Early UI; **not production-hardened**.
 
 API / Docker stack: [moodjournal](https://github.com/kopolot/moodjournal)
 
-This app is mainly **auth UI** plus local-only mood note screens. Mood entries are **not** persisted to the API.
+Product idea: daily check-ins with overall + aspect moods (inner mood, relationships, activity, environment), XP/streaks, and a future Plus tier for AI insights.
 
 ## Stack
 
@@ -18,13 +18,16 @@ This app is mainly **auth UI** plus local-only mood note screens. Mood entries a
 | Routing | Expo Router (file-based) |
 | HTTP | Axios |
 | Storage | AsyncStorage |
-| i18n | i18next (EN/PL, incomplete) |
+| Fonts | Nunito (`@expo-google-fonts/nunito`) |
+| Motion | Reanimated + Haptics |
+| i18n | i18next (EN/PL) |
 
 ## Requirements
 
 - Node.js matching Expo 57 (see Expo docs; typically recent LTS)
 - Expo Go that supports **SDK 57**, or a dev/build client
 - Running API on the LAN (`http://<host>:8080`) for device testing
+- `npm install --legacy-peer-deps` (peer conflict with TypeScript 6 / react-i18next)
 
 ## Setup
 
@@ -60,18 +63,34 @@ Without override, `config/appConfig.ts` resolves:
 
 | Path | Role |
 |------|------|
-| `app/` | Expo Router screens (`(auth)`, `(app)`, `_(dev)`) |
-| `services/` | `apiClient`, `authService` |
-| `contexts/` | Auth + i18n |
-| `config/appConfig.ts` | Env + API host resolution |
+| `app/(auth)/` | Register / login / offline gate |
+| `app/(app)/` | Tabs: Home, History, Check-in, Profile |
+| `services/moodService.ts` | Mood CRUD + stats against API |
+| `services/authService.ts` | Auth session |
+| `components/game/` | XP bar, streak, primary buttons |
+| `styles/gameStyles.ts`, `styles/colors.ts` | Gamified design tokens |
+| `locales/` | EN/PL copy |
 | `utils/alert.ts` | Cross-platform alerts (web + native) |
-| `styles/` | Shared screen styles |
 
-## Auth API contract (backend)
+### Tabs
+
+1. **Home** — streak, XP/level, daily quest CTA, AI teaser  
+2. **History** — list of synced entries (long-press delete)  
+3. **Check-in** — multi-step mood form → `POST /mood`  
+4. **Profile** — name edit, language toggle, logout, Plus teaser  
+
+## API contract (backend)
+
+Auth:
 
 - Register: `POST /user/register`
 - Login: `POST /user/login` with `{ email, password }` → `data.jwt_token`
-- Profile: `GET /user/get` with `Authorization: Bearer …`
+- Profile: `GET /user/get`, `PATCH /user/edit`
+
+Mood (Bearer JWT):
+
+- `POST /mood` — create check-in (`overallMood`, `aspects`, optional `note`)
+- `GET /mood`, `GET /mood/stats`, `DELETE /mood/{id}`
 
 Do **not** import `@react-navigation/*` in app code — use `expo-router` / `expo-router/react-navigation` / `expo-router/js-tabs` (SDK 56+ rule).
 
@@ -83,6 +102,7 @@ Do **not** import `@react-navigation/*` in app code — use `expo-router` / `exp
 | QR opens nothing | Same Wi‑Fi as PC; use Expo Go for SDK 57; prefer LAN over tunnel |
 | Login works on web, fails on phone | Phone must reach API at LAN IP `:8080` (not `localhost`) |
 | Web login silent failure | Use `showAlert` (not only `Alert.alert`); CORS must allow the web origin |
+| Check-in fails after login | Confirm email verified; migrate API DB so `/mood` exists |
 
 ## Tests
 
@@ -96,4 +116,4 @@ See [`AGENTS.md`](./AGENTS.md) and [`.cursor/rules/`](./.cursor/rules/).
 
 ## Why this exists
 
-Part of an unfinished personal product. Kept as an example of Expo Router + JWT auth wiring — not a shipping app.
+Client for the MoodDic prototype — Expo Router + JWT auth + gamified mood check-ins. Example / learning code, not a shipping store build.

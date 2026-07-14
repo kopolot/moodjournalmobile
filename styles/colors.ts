@@ -1,6 +1,5 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * MoodDic — playful, Duolingo-inspired palette (green-first, energetic).
  */
 
 interface ColorType {
@@ -24,63 +23,95 @@ interface ColorType {
   inputBackground: string;
   overlay: string;
   backgroundSecondary: string;
-  shadow: string; 
+  shadow: string;
   textDisabled: string;
   link: string;
+  xp: string;
+  streak: string;
+  surfaceStrong: string;
+  onPrimary: string;
 }
 
-const tintColorLight = '#4285F4';  // Jasny niebieski (Google Blue)
-const tintColorDark = '#6BA7FF';   // Jaśniejszy niebieski dla ciemnego motywu
+export const Brand = {
+  green: '#58CC02',
+  greenDark: '#46A302',
+  greenSoft: '#E5F8D0',
+  blue: '#1CB0F6',
+  gold: '#FFC800',
+  streak: '#FF9600',
+  red: '#FF4B4B',
+  ink: '#3C3C3C',
+  mist: '#F0F4F8',
+  skyWash: '#DDF4FF',
+  creamWash: '#FFF8E7',
+};
+
+export const MoodScale = [
+  { level: 1, color: '#FF4B4B', emoji: '😫', labelKey: 'mood.scale.1' },
+  { level: 2, color: '#FF9600', emoji: '😕', labelKey: 'mood.scale.2' },
+  { level: 3, color: '#FFC800', emoji: '😐', labelKey: 'mood.scale.3' },
+  { level: 4, color: '#A5D631', emoji: '🙂', labelKey: 'mood.scale.4' },
+  { level: 5, color: '#58CC02', emoji: '😄', labelKey: 'mood.scale.5' },
+  { level: 6, color: '#1CB0F6', emoji: '🤩', labelKey: 'mood.scale.6' },
+] as const;
 
 export const Colors = {
   light: {
-    text: '#202124',           // Ciemny szary, prawie czarny
-    background: '#FFFFFF',     // Czysta biel
-    tint: tintColorLight,
-    icon: '#5F6368',           // Średni szary
-    tabIconDefault: '#5F6368', // Średni szary
-    tabIconSelected: tintColorLight,
-    card: '#FFFFFF',           // Czysta biel
-    border: '#DADCE0',         // Jasny szary
-    notification: '#EA4335',   // Czerwony (Google Red)
-    error: '#EA4335',          // Czerwony (Google Red)
-    success: '#34A853',        // Zielony (Google Green)
-    warning: '#FBBC05',        // Żółty (Google Yellow)
-    info: '#4285F4',           // Niebieski (Google Blue)
-    accent: '#F25C05',         // Pomarańczowy akcent
-    muted: '#80868B',          // Przytłumiony szary
-    primaryButton: tintColorLight,
-    secondaryButton: '#E8EAED', // Bardzo jasny szary
-    inputBackground: '#F8F9FA', // Prawie biały
-    overlay: 'rgba(0,0,0,0.5)',
-    backgroundSecondary: '#F1F3F4', // Jasny szary
-    shadow: 'rgba(0, 0, 0, 0.1)', // Opcjonalny cień
-    textDisabled: '#9AA0A6',   // Przytłumiony jasny szary
-    link: '#1A73E8',           // Niebieski link (Google Link Blue)
+    text: Brand.ink,
+    background: Brand.mist,
+    tint: Brand.green,
+    icon: '#777777',
+    tabIconDefault: '#AFAFAF',
+    tabIconSelected: Brand.green,
+    card: '#FFFFFF',
+    border: '#E5E5E5',
+    notification: Brand.red,
+    error: Brand.red,
+    success: Brand.green,
+    warning: Brand.gold,
+    info: Brand.blue,
+    accent: Brand.streak,
+    muted: '#777777',
+    primaryButton: Brand.green,
+    secondaryButton: '#E5E5E5',
+    inputBackground: '#FFFFFF',
+    overlay: 'rgba(0,0,0,0.45)',
+    backgroundSecondary: Brand.skyWash,
+    shadow: 'rgba(60, 60, 60, 0.12)',
+    textDisabled: '#AFAFAF',
+    link: Brand.blue,
+    xp: Brand.gold,
+    streak: Brand.streak,
+    surfaceStrong: Brand.greenSoft,
+    onPrimary: '#FFFFFF',
   } as ColorType,
   dark: {
-    text: '#E8EAED',           // Bardzo jasny szary, prawie biały
-    background: '#202124',     // Ciemny szary, prawie czarny
-    tint: tintColorDark,
-    icon: '#9AA0A6',           // Średni jasny szary
-    tabIconDefault: '#9AA0A6', // Średni jasny szary
-    tabIconSelected: tintColorDark,
-    card: '#2D2E30',           // Ciemny szary
-    border: '#5F6368',         // Ciemniejszy szary
-    notification: '#F28B82',   // Jaśniejszy czerwony
-    error: '#F28B82',          // Jaśniejszy czerwony
-    success: '#81C995',        // Jaśniejszy zielony
-    warning: '#FDD663',        // Jaśniejszy żółty
-    info: '#6BA7FF',           // Jaśniejszy niebieski
-    accent: '#FF8F73',         // Jaśniejszy pomarańczowy akcent
-    muted: '#9AA0A6',          // Przytłumiony jasny szary
-    primaryButton: tintColorDark,
-    secondaryButton: '#3C4043', // Ciemny szary
-    inputBackground: '#303134', // Ciemniejszy szary
-    overlay: 'rgba(0,0,0,0.7)',
-    backgroundSecondary: '#2D2E30', // Ciemny szary
-    shadow: 'rgba(255, 255, 255, 0.5)', // Opcjonalny cień
-    textDisabled: '#5F6368',   // Przytłumiony szary
-    link: '#8AB4F8',           // Jaśniejszy niebieski link
+    text: '#F5F5F5',
+    background: '#1A1F24',
+    tint: Brand.green,
+    icon: '#B0B0B0',
+    tabIconDefault: '#6B6B6B',
+    tabIconSelected: Brand.green,
+    card: '#252B31',
+    border: '#3A424A',
+    notification: '#FF6B6B',
+    error: '#FF6B6B',
+    success: Brand.green,
+    warning: Brand.gold,
+    info: Brand.blue,
+    accent: Brand.streak,
+    muted: '#9A9A9A',
+    primaryButton: Brand.green,
+    secondaryButton: '#3A424A',
+    inputBackground: '#2C333A',
+    overlay: 'rgba(0,0,0,0.65)',
+    backgroundSecondary: '#243038',
+    shadow: 'rgba(0, 0, 0, 0.4)',
+    textDisabled: '#6B6B6B',
+    link: Brand.blue,
+    xp: Brand.gold,
+    streak: Brand.streak,
+    surfaceStrong: '#2A3A22',
+    onPrimary: '#FFFFFF',
   } as ColorType,
 };

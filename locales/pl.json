@@ -1,50 +1,175 @@
 {
-    "register":{
-        "title": "Register",
-        "subtitle": "Create a new account",
-        "firstname": "First Name",
-        "email": "Email",
-        "password": "Password",
-        "repeatPassword": "Confirm Password",
-        "submit": "Register",
-        "success": "Registration successful! Please check your email to verify your account.",
-        "privacyPolicy": "I accept the terms and conditions",
-        "alreadyHaveAccount": "Already have an account? Log in here",
-        "login": "Login",
-        "errorFields" : "Please fill in all fields correctly.",
-        "passwordMismatch": "Passwords do not match.",
-        "privacyPolicyError": "You must accept the privacy policy.",
-        "error": "An error occurred during registration. Please try again later.",
-    },
-    "error": "Error",
-    "success": "Success",
-    "app":{
-        "error": "An error occurred. Please contact support.",
-    },
-    "user":{
-        "registration":{
-            
-            "success": "Registration successful! Please check your email to verify your account.",
-            "failed": "Registration failed.",
-        },
-        "fitst_name":{
-            "not_blank": "First name cannot be blank.",
-            "length": "First name must be between 2 and 50 characters.",
-        },
-        "email":{
-            "not_blank": "Email cannot be blank.",
-            "invalid": "Email is not valid.",
-        },
-        "password":{
-            "not_blank": "Password cannot be blank.",
-            "length": "Password must be at least 6 characters long.",
-        },
-        "repeat_password":{
-            "not_blank": "Confirm password cannot be blank.",
-            "not_match": "Passwords do not match.",
-        },
-        "privacy_policy":{
-            "not_accepted": "You must accept the privacy policy.",
-        },
+  "register": {
+    "title": "Dołącz do MoodDic",
+    "subtitle": "Zbuduj swoją serię nastroju już dziś",
+    "firstname": "Imię",
+    "email": "Email",
+    "password": "Hasło",
+    "repeatPassword": "Powtórz hasło",
+    "submit": "Załóż konto",
+    "success": "Rejestracja udana! Sprawdź email i potwierdź konto.",
+    "privacyPolicy": "Akceptuję regulamin i politykę prywatności",
+    "alreadyHaveAccount": "Masz już konto?",
+    "login": "Zaloguj się",
+    "errorFields": "Uzupełnij poprawnie wszystkie pola.",
+    "passwordMismatch": "Hasła nie są takie same.",
+    "privacyPolicyError": "Musisz zaakceptować politykę prywatności.",
+    "error": "Rejestracja nie powiodła się. Spróbuj później."
+  },
+  "login": {
+    "errorFields": "Uzupełnij poprawnie wszystkie pola.",
+    "error": "Logowanie nie powiodło się. Spróbuj później.",
+    "title": "Witaj z powrotem",
+    "subtitle": "Zaloguj się i chroń swoją serię",
+    "email": "Email",
+    "password": "Hasło",
+    "submit": "Zaloguj",
+    "forgotPassword": "Nie pamiętasz hasła?",
+    "noAccount": "Nie masz konta?",
+    "register": "Zarejestruj się"
+  },
+  "error": "Błąd",
+  "success": "Sukces",
+  "common": {
+    "cancel": "Anuluj",
+    "save": "Zapisz"
+  },
+  "tabs": {
+    "home": "Główna",
+    "history": "Historia",
+    "checkin": "Check-in",
+    "profile": "Profil"
+  },
+  "home": {
+    "greeting": "Hej, {{name}}!",
+    "questToday": "Dzisiejszy quest: zapisz, jak czujesz się w różnych obszarach życia.",
+    "doneToday": "Super — dzisiejszy check-in zaliczony. Wróć jutro po XP za serię!",
+    "startCheckin": "Zacznij check-in",
+    "addAnother": "Dodaj kolejny wpis",
+    "progress": "Twój postęp",
+    "totalXp": "{{xp}} XP łącznie",
+    "weekPulse": "Puls 7 dni",
+    "average": "Średni nastrój: {{value}} / 6",
+    "noAverage": "Zrób kilka check-inów, żeby zobaczyć tygodniowy puls.",
+    "entries": "{{count}} wpisów",
+    "bestStreak": "Najlepsza seria: {{count}} dni",
+    "aiTitle": "Trener AI nastroju",
+    "aiTeaser": "MoodDic Plus odblokuje głębszą analizę AI wzorców w nastroju, relacjach, aktywności i otoczeniu."
+  },
+  "history": {
+    "title": "Historia",
+    "emptyTitle": "Brak wpisów",
+    "emptyBody": "Tutaj pojawią się Twoje check-iny z XP. Przytrzymaj wpis, żeby go usunąć.",
+    "deleteTitle": "Usunąć wpis?",
+    "deleteBody": "Check-in zostanie trwale usunięty.",
+    "deleteConfirm": "Usuń",
+    "deleteError": "Nie udało się usunąć wpisu."
+  },
+  "mood": {
+    "scale": {
+      "1": "Fatalnie",
+      "2": "Słabo",
+      "3": "Ujdzie",
+      "4": "OK",
+      "5": "Dobrze",
+      "6": "Super"
     }
+  },
+  "mood-note": {
+    "title": "Check-in",
+    "next": "Dalej",
+    "back": "Wróć",
+    "submit": "Zbierz XP",
+    "backHome": "Wróć do głównej",
+    "submitError": "Nie udało się zapisać check-inu.",
+    "successTitle": "Quest ukończony!",
+    "successBody": "Mapa nastroju zapisana. Utrzymaj serię jutro.",
+    "aspectNotePlaceholder": "Opcjonalna notatka do tego aspektu…",
+    "overallNotePlaceholder": "Coś jeszcze na myśli?",
+    "overall": {
+      "title": "Jak czujesz się ogólnie?",
+      "hint": "Wybierz buźkę, która trafia w Twój vibe.",
+      "short": "Ogółem"
+    },
+    "summary": {
+      "title": "Szybkie podsumowanie",
+      "hint": "Dodaj opcjonalną notatkę i zbierz XP."
+    },
+    "aspects": {
+      "mood": {
+        "title": "Wewnętrzny nastrój",
+        "hint": "Twoja emocjonalna pogoda w środku."
+      },
+      "relationship": {
+        "title": "Relacje",
+        "hint": "Ludzie, bliskość, kontakt."
+      },
+      "activity": {
+        "title": "Aktywność",
+        "hint": "Energia, fokus, rzeczy zrobione."
+      },
+      "environment": {
+        "title": "Otoczenie",
+        "hint": "Miejsce, hałas, komfort wokół Ciebie."
+      }
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "editName": "Twoje imię",
+    "changeName": "Zmień imię",
+    "nameInvalid": "Imię musi mieć co najmniej 2 znaki.",
+    "saveSuccess": "Profil zaktualizowany.",
+    "saveError": "Nie udało się zaktualizować profilu.",
+    "logout": "Wyloguj",
+    "logoutError": "Nie udało się wylogować.",
+    "languagePl": "Język polski",
+    "plusTeaser": "Subskrypcja odblokuje analizę AI, raporty wzorców i wskazówki. Wkrótce.",
+    "about": "O MoodDic",
+    "aboutTitle": "MoodDic",
+    "aboutBody": "Zgamifikowany dziennik nastroju · v{{version}}"
+  },
+  "app": {
+    "error": "Wystąpił błąd. Skontaktuj się z supportem.",
+    "offline": {
+      "title": "Jesteś offline"
+    }
+  },
+  "user": {
+    "registration": {
+      "success": "Rejestracja udana! Sprawdź email i potwierdź konto.",
+      "failed": "Rejestracja nie powiodła się."
+    },
+    "login": {
+      "success": "Zalogowano. Witaj z powrotem.",
+      "failed": "Logowanie nie powiodło się. Sprawdź dane."
+    },
+    "not_found": "Nie znaleziono użytkownika.",
+    "session": {
+      "not_found": "Brak sesji."
+    },
+    "fitst_name": {
+      "not_blank": "Imię nie może być puste.",
+      "length": "Imię musi mieć od 2 do 50 znaków."
+    },
+    "first_name": {
+      "not_blank": "Imię nie może być puste.",
+      "length": "Imię musi mieć od 2 do 50 znaków."
+    },
+    "email": {
+      "not_blank": "Email nie może być pusty.",
+      "invalid": "Email jest nieprawidłowy."
+    },
+    "password": {
+      "not_blank": "Hasło nie może być puste.",
+      "length": "Hasło musi mieć co najmniej 6 znaków."
+    },
+    "repeat_password": {
+      "not_blank": "Powtórzenie hasła nie może być puste.",
+      "not_match": "Hasła nie są takie same."
+    },
+    "privacy_policy": {
+      "not_accepted": "Musisz zaakceptować politykę prywatności."
+    }
+  }
 }

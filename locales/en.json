@@ -1,72 +1,171 @@
 {
-    "register":{
-        "title": "Register",
-        "subtitle": "Create a new account",
-        "firstname": "First Name",
-        "email": "Email",
-        "password": "Password",
-        "repeatPassword": "Confirm Password",
-        "submit": "Register",
-        "success": "Registration successful! Please check your email to verify your account.",
-        "privacyPolicy": "I accept the terms and conditions",
-        "alreadyHaveAccount": "Already have an account? Log in here",
-        "login": "Login",
-        "errorFields" : "Please fill in all fields correctly.",
-        "passwordMismatch": "Passwords do not match.",
-        "privacyPolicyError": "You must accept the privacy policy.",
-        "error": "An error occurred during registration. Please try again later.",
-    },
-    "login":{
-        "errorFields": "Please fill in all fields correctly.",
-        "error":"An error occurred during login. Please try again later.",
-        "title": "Login",
-        "subtitle": "Welcome back! Please log in to your account",
-        "email": "Email",
-        "password": "Password",
-        "submit": "Login",
-        "forgotPassword": "Forgot your password?",
-        "noAccount": "Don't have an account?",
-        "register": "Register here",
-    },
-    "error": "Error",
-    "success": "Success",
-    "app":{
-        "error": "An error occurred. Please contact support.",
-        "offline": {
-            "title": "You are offline",
-        }
-    },
-    "user":{
-        "registration":{
-            "success": "Registration successful! Please check your email to verify your account.",
-            "failed": "Registration failed.",
-        },
-        "login":{
-            "success": "Login successful! Welcome back.",
-            "failed": "Login failed. Please check your credentials.",
-        },
-        "not_found": "User not found.",
-        "session":{
-            "not_found": "Session not found.",
-        },
-        "first_name":{
-            "not_blank": "First name cannot be blank.",
-            "length": "First name must be between 2 and 50 characters.",
-        },
-        "email":{
-            "not_blank": "Email cannot be blank.",
-            "invalid": "Email is not valid.",
-        },
-        "password":{
-            "not_blank": "Password cannot be blank.",
-            "length": "Password must be at least 6 characters long.",
-        },
-        "repeat_password":{
-            "not_blank": "Confirm password cannot be blank.",
-            "not_match": "Passwords do not match.",
-        },
-        "privacy_policy":{
-            "not_accepted": "You must accept the privacy policy.",
-        },
+  "register": {
+    "title": "Join MoodDic",
+    "subtitle": "Build your mood streak today",
+    "firstname": "First name",
+    "email": "Email",
+    "password": "Password",
+    "repeatPassword": "Confirm password",
+    "submit": "Create account",
+    "success": "Registration successful! Check your email to verify your account.",
+    "privacyPolicy": "I accept the terms and privacy policy",
+    "alreadyHaveAccount": "Already have an account?",
+    "login": "Log in",
+    "errorFields": "Please fill in all fields correctly.",
+    "passwordMismatch": "Passwords do not match.",
+    "privacyPolicyError": "You must accept the privacy policy.",
+    "error": "Registration failed. Try again later."
+  },
+  "login": {
+    "errorFields": "Please fill in all fields correctly.",
+    "error": "Login failed. Try again later.",
+    "title": "Welcome back",
+    "subtitle": "Log in and keep your streak alive",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Log in",
+    "forgotPassword": "Forgot your password?",
+    "noAccount": "Don't have an account?",
+    "register": "Sign up"
+  },
+  "error": "Error",
+  "success": "Success",
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "tabs": {
+    "home": "Home",
+    "history": "History",
+    "checkin": "Check-in",
+    "profile": "Profile"
+  },
+  "home": {
+    "greeting": "Hey, {{name}}!",
+    "questToday": "Daily quest: log how you feel across life's little arenas.",
+    "doneToday": "Nice — today's check-in is done. Come back tomorrow for streak XP!",
+    "startCheckin": "Start check-in",
+    "addAnother": "Log another entry",
+    "progress": "Your progress",
+    "totalXp": "{{xp}} XP total",
+    "weekPulse": "7-day pulse",
+    "average": "Average mood: {{value}} / 6",
+    "noAverage": "Log a few entries to see your weekly pulse.",
+    "entries": "{{count}} entries",
+    "bestStreak": "Best streak: {{count}} days",
+    "aiTitle": "AI mood coach",
+    "aiTeaser": "MoodDic Plus will unlock deeper AI analysis of patterns across moods, relationships, activity and environment."
+  },
+  "history": {
+    "title": "History",
+    "emptyTitle": "No entries yet",
+    "emptyBody": "Your check-ins will show up here with XP earned. Long-press an entry to delete it.",
+    "deleteTitle": "Delete entry?",
+    "deleteBody": "This removes the mood check-in permanently.",
+    "deleteConfirm": "Delete",
+    "deleteError": "Could not delete this entry."
+  },
+  "mood": {
+    "scale": {
+      "1": "Awful",
+      "2": "Rough",
+      "3": "Meh",
+      "4": "Okay",
+      "5": "Good",
+      "6": "Amazing"
     }
+  },
+  "mood-note": {
+    "title": "Check-in",
+    "next": "Next",
+    "back": "Back",
+    "submit": "Claim XP",
+    "backHome": "Back to home",
+    "submitError": "Could not save your check-in.",
+    "successTitle": "Quest complete!",
+    "successBody": "Your mood map is saved. Keep the streak going tomorrow.",
+    "aspectNotePlaceholder": "Optional note for this aspect…",
+    "overallNotePlaceholder": "Anything else on your mind today?",
+    "overall": {
+      "title": "How do you feel overall?",
+      "hint": "Pick the face that matches your vibe right now.",
+      "short": "Overall"
+    },
+    "summary": {
+      "title": "Quick recap",
+      "hint": "Add an optional note, then claim your XP."
+    },
+    "aspects": {
+      "mood": {
+        "title": "Inner mood",
+        "hint": "Your emotional weather inside."
+      },
+      "relationship": {
+        "title": "Relationships",
+        "hint": "People, closeness, connection."
+      },
+      "activity": {
+        "title": "Activity",
+        "hint": "Energy, focus, what you got done."
+      },
+      "environment": {
+        "title": "Environment",
+        "hint": "Place, noise, comfort around you."
+      }
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "editName": "Your name",
+    "changeName": "Edit name",
+    "nameInvalid": "Name must be at least 2 characters.",
+    "saveSuccess": "Profile updated.",
+    "saveError": "Could not update profile.",
+    "logout": "Log out",
+    "logoutError": "Could not log out.",
+    "languagePl": "Polish language",
+    "plusTeaser": "Subscription unlocks AI mood insights, pattern reports and coaching tips. Coming soon.",
+    "about": "About MoodDic",
+    "aboutTitle": "MoodDic",
+    "aboutBody": "Gamified mood journal · v{{version}}"
+  },
+  "app": {
+    "error": "Something went wrong. Please contact support.",
+    "offline": {
+      "title": "You are offline"
+    }
+  },
+  "user": {
+    "registration": {
+      "success": "Registration successful! Please check your email to verify your account.",
+      "failed": "Registration failed."
+    },
+    "login": {
+      "success": "Login successful! Welcome back.",
+      "failed": "Login failed. Please check your credentials."
+    },
+    "not_found": "User not found.",
+    "session": {
+      "not_found": "Session not found."
+    },
+    "first_name": {
+      "not_blank": "First name cannot be blank.",
+      "length": "First name must be between 2 and 50 characters."
+    },
+    "email": {
+      "not_blank": "Email cannot be blank.",
+      "invalid": "Email is not valid."
+    },
+    "password": {
+      "not_blank": "Password cannot be blank.",
+      "length": "Password must be at least 6 characters long."
+    },
+    "repeat_password": {
+      "not_blank": "Confirm password cannot be blank.",
+      "not_match": "Passwords do not match."
+    },
+    "privacy_policy": {
+      "not_accepted": "You must accept the privacy policy."
+    }
+  }
 }

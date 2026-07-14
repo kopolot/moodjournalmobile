@@ -54,7 +54,8 @@
     "entries": "{{count}} entries",
     "bestStreak": "Best streak: {{count}} days",
     "aiTitle": "AI mood coach",
-    "aiTeaser": "MoodDic Plus will unlock deeper AI analysis of patterns across moods, relationships, activity and environment."
+    "aiTeaser": "MoodDic Plus/Pro unlocks deeper AI pattern analysis — open Profile → Subscription.",
+    "aiUnlocked": "Plus/Pro is active — AI analysis (placeholder) is unlocked."
   },
   "history": {
     "title": "History",
@@ -63,6 +64,7 @@
     "deleteTitle": "Delete entry?",
     "deleteBody": "This removes the mood check-in permanently.",
     "deleteConfirm": "Delete",
+    "deleteSuccess": "Entry deleted.",
     "deleteError": "Could not delete this entry."
   },
   "mood": {
@@ -84,33 +86,58 @@
     "submitError": "Could not save your check-in.",
     "successTitle": "Quest complete!",
     "successBody": "Your mood map is saved. Keep the streak going tomorrow.",
-    "aspectNotePlaceholder": "Optional note for this aspect…",
-    "overallNotePlaceholder": "Anything else on your mind today?",
+    "incompleteTitle": "Almost there",
+    "incompleteBody": "Pick a score and — if needed — a short note (min. {{min}} characters).",
+    "aspectNoteRequired": "Short note (required)",
+    "aspectNoteOptional": "Short note (optional)",
+    "aspectNotePlaceholder": "e.g. what shaped this for you…",
+    "aspectNoteHint": "{{count}} / min. {{min}} characters",
+    "overallNoteRequired": "Short note (required)",
+    "overallNotePlaceholder": "How are you feeling mentally and emotionally?",
+    "whyRequired": "No history yet, score differs from your average, or the last ~1.5 weeks dropped — add context.",
+    "yourAverage": "Your average: {{value}}/6",
+    "dropBanner": "Heads up: your ~1.5-week average dropped noticeably. Notes are required.",
     "overall": {
-      "title": "How do you feel overall?",
-      "hint": "Pick the face that matches your vibe right now.",
-      "short": "Overall"
+      "title": "Mental health — overall feel?",
+      "hint": "This is your general mental-health check. Pick a face and add a short note.",
+      "short": "Mental health"
     },
     "summary": {
-      "title": "Quick recap",
-      "hint": "Add an optional note, then claim your XP."
+      "title": "Recap",
+      "hint": "Review your scores, then claim XP."
     },
     "aspects": {
-      "mood": {
-        "title": "Inner mood",
-        "hint": "Your emotional weather inside."
+      "close_relationships": {
+        "title": "Close relationships",
+        "hint": "Family, friends, important bonds."
       },
-      "relationship": {
-        "title": "Relationships",
-        "hint": "People, closeness, connection."
+      "romantic_relationships": {
+        "title": "Romantic relationships",
+        "hint": "Partnership, romance, dating."
       },
-      "activity": {
-        "title": "Activity",
-        "hint": "Energy, focus, what you got done."
+      "duties": {
+        "title": "Duties & responsibilities",
+        "hint": "What you have to handle and how that feels."
+      },
+      "physical_health": {
+        "title": "Physical health",
+        "hint": "Body, sleep, energy, physical comfort."
+      },
+      "finances": {
+        "title": "Material situation",
+        "hint": "Money, security, daily needs."
+      },
+      "relaxation": {
+        "title": "Relaxation",
+        "hint": "Rest, play, recovery."
+      },
+      "growth_spirituality": {
+        "title": "Growth & spirituality",
+        "hint": "Learning, meaning, inner development."
       },
       "environment": {
         "title": "Environment",
-        "hint": "Place, noise, comfort around you."
+        "hint": "Home, place, noise, comfort around you."
       }
     }
   },
@@ -122,12 +149,36 @@
     "saveSuccess": "Profile updated.",
     "saveError": "Could not update profile.",
     "logout": "Log out",
+    "logoutConfirm": "Are you sure you want to log out?",
     "logoutError": "Could not log out.",
     "languagePl": "Polish language",
-    "plusTeaser": "Subscription unlocks AI mood insights, pattern reports and coaching tips. Coming soon.",
+    "dailyNotifications": "Daily reminders",
+    "dailyNotificationsHint": "Notification at 20:00 to protect your check-in streak.",
+    "notificationsOn": "Reminders enabled.",
+    "notificationsOff": "Reminders disabled.",
+    "notificationsDenied": "Notifications permission denied — enable it in system settings.",
+    "planTitle": "Plan {{tier}}",
+    "manageSubscription": "Subscription & payment",
+    "plusTeaser": "Plus/Pro unlocks AI insights and pattern reports. Demo payment is in the app.",
     "about": "About MoodDic",
     "aboutTitle": "MoodDic",
     "aboutBody": "Gamified mood journal · v{{version}}"
+  },
+  "subscription": {
+    "title": "Subscription",
+    "current": "Your plan: {{tier}}",
+    "demoHint": "Mock checkout — looks real, does not charge a real card. Cards ending in 0000 are declined.",
+    "perMonth": "/mo",
+    "paymentTitle": "Card details (demo)",
+    "cardName": "Name on card",
+    "cardNumber": "Card number",
+    "cardNameRequired": "Enter the cardholder name.",
+    "pay": "Pay & activate",
+    "processing": "Processing…",
+    "paySuccess": "Payment accepted — plan active!",
+    "payError": "Payment failed.",
+    "cancel": "Cancel subscription",
+    "canceled": "Back on Free."
   },
   "app": {
     "error": "Something went wrong. Please contact support.",

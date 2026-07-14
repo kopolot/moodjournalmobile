@@ -132,7 +132,14 @@ export const API_CONFIG = {
       LIST: '/mood',
       CREATE: '/mood',
       STATS: '/mood/stats',
+      CHECKIN_HINTS: '/mood/checkin-hints',
       DETAIL: (id: string) => `/mood/${id}`,
+    },
+    SUBSCRIPTION: {
+      PLANS: '/subscription/plans',
+      CURRENT: '/subscription/current',
+      CHECKOUT: '/subscription/checkout',
+      CANCEL: '/subscription/cancel',
     },
     CONTENT: {},
   },
@@ -173,6 +180,17 @@ export const APP_CONFIG = {
   },
 };
 
+/** Life aspects (mental health = overall mood, not listed here). */
 export const APP_LOGIC_CONFIG = {
-  specificMoods: ['mood', 'relationship', 'activity', 'environment'],
+  aspectNoteMinLength: 5,
+  specificMoods: [
+    'close_relationships',
+    'romantic_relationships',
+    'duties',
+    'physical_health',
+    'finances',
+    'relaxation',
+    'growth_spirituality',
+    'environment',
+  ] as const,
 };

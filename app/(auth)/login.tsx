@@ -7,7 +7,7 @@ import useStyles from '@/hooks/useStyles';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import useAuthStyles from '@/styles/authStyles';
 import { useI18n } from '@/contexts/I18nContext';
-import { showAlert } from '@/utils/alert';
+import { useFeedback } from '@/contexts/FeedbackContext';
 
 export default function LoginScreen() {
   const { login } = useAuth();
@@ -19,10 +19,11 @@ export default function LoginScreen() {
   const linkColor = useThemeColor({}, 'link');
   const styles = useAuthStyles();
   const { t } = useI18n();
+  const { showToast } = useFeedback();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      showAlert(t('error'), t('login.errorFields'));
+      showToast({ tone: 'error', title: t('error'), message: t('login.errorFields') });
       return;
     }
 
@@ -30,14 +31,15 @@ export default function LoginScreen() {
       setIsLoading(true);
       const response = await login(email, password, true);
       if (!response.success) {
-        showAlert(
-          t('error'),
-          t(response.message?.[0] || 'login.error')
-        );
+        showToast({
+          tone: 'error',
+          title: t('error'),
+          message: t(response.message?.[0] || 'login.error'),
+        });
       }
     } catch (error) {
       console.error('Login error:', error);
-      showAlert(t('error'), t('login.error'));
+      showToast({ tone: 'error', title: t('error'), message: t('login.error') });
     } finally {
       setIsLoading(false);
     }

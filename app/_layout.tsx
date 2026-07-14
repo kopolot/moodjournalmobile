@@ -14,7 +14,10 @@ import { ActivityIndicator, View } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { I18nProvider } from '@/contexts/I18nContext';
+import { FeedbackProvider } from '@/contexts/FeedbackContext';
 import { Brand } from '@/styles/colors';
+import { AlertToastBridge } from '@/components/ui/AlertToastBridge';
+import { NotificationService } from '@/services/notificationService';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -31,6 +34,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
+      NotificationService.bootstrap().catch(() => undefined);
     }
   }, [loaded]);
 
@@ -51,12 +55,15 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <I18nProvider>
-        <AuthProvider>
-          <Stack>
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(app)" options={{ headerShown: false }} />
-          </Stack>
-        </AuthProvider>
+        <FeedbackProvider>
+          <AlertToastBridge />
+          <AuthProvider>
+            <Stack>
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(app)" options={{ headerShown: false }} />
+            </Stack>
+          </AuthProvider>
+        </FeedbackProvider>
       </I18nProvider>
     </ThemeProvider>
   );

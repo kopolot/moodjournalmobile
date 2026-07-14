@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -16,19 +16,29 @@ import { APP_LOGIC_CONFIG } from '@/config/appConfig';
 import MoodSelector from '@/components/form/partials/MoodSelector';
 import SpecificMoodSection from '@/components/form/SpecificMoodSection';
 import PrimaryButton from '@/components/game/PrimaryButton';
-import { MoodService, AspectKey } from '@/services/moodService';
+import {
+  MoodService,
+  AspectKey,
+  CheckinHints,
+  isNoteRequiredForScore,
+} from '@/services/moodService';
 import { Brand } from '@/styles/colors';
 import { gameFonts, gameStyles } from '@/styles/gameStyles';
-import { showAlert } from '@/utils/alert';
+import { useFeedback } from '@/contexts/FeedbackContext';
 
 type AspectState = Record<AspectKey, { score: number; note: string }>;
 
+const noteOk = (value: string, min: number) => value.trim().length >= min;
+
 export default function MoodNoteScreen() {
-  const aspects = APP_LOGIC_CONFIG.specificMoods as AspectKey[];
+  const aspects = [...APP_LOGIC_CONFIG.specificMoods];
+  const noteMin = APP_LOGIC_CONFIG.aspectNoteMinLength;
   const totalSteps = 2 + aspects.length; // overall + aspects + summary
   const { t } = useI18n();
+  const { showToast } = useFeedback();
   const router = useRouter();
 
+  const [hints, setHints] = useState<CheckinHints | null>(null);
   const [step, setStep] = useState(1);
   const [overallMood, setOverallMood] = useState(0);
   const [overallNote, setOverallNote] = useState('');
@@ -42,19 +52,46 @@ export default function MoodNoteScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [earnedXp, setEarnedXp] = useState<number | null>(null);
 
+  useEffect(() => {
+    MoodService.getCheckinHints().then(setHints);
+  }, []);
+
   const progress = useMemo(() => step / totalSteps, [step, totalSteps]);
+  const deviation = hints?.deviationThreshold ?? 1;
+  const drop = !!hints?.noticeableDrop;
+
+  const overallNoteRequired = isNoteRequiredForScore(
+    overallMood,
+    hints?.overallAverage,
+    drop,
+    deviation
+  );
+
+  const aspectNoteRequired = (key: AspectKey, score: number) =>
+    isNoteRequiredForScore(score, hints?.aspectAverages?.[key], drop, deviation);
 
   const canNext = () => {
-    if (step === 1) return overallMood > 0;
+    if (step === 1) {
+      if (overallMood <= 0) return false;
+      return !overallNoteRequired || noteOk(overallNote, noteMin);
+    }
     if (step > 1 && step <= aspects.length + 1) {
       const key = aspects[step - 2];
-      return specific[key].score > 0;
+      if (specific[key].score <= 0) return false;
+      return !aspectNoteRequired(key, specific[key].score) || noteOk(specific[key].note, noteMin);
     }
     return true;
   };
 
   const nextStep = () => {
-    if (!canNext()) return;
+    if (!canNext()) {
+      showToast({
+        tone: 'info',
+        title: t('mood-note.incompleteTitle'),
+        message: t('mood-note.incompleteBody', { min: noteMin }),
+      });
+      return;
+    }
     setStep((s) => Math.min(totalSteps, s + 1));
   };
 
@@ -79,7 +116,7 @@ export default function MoodNoteScreen() {
 
       const result = await MoodService.create(payload);
       if (!result) {
-        showAlert(t('error'), t('mood-note.submitError'));
+        showToast({ tone: 'error', title: t('error'), message: t('mood-note.submitError') });
         return;
       }
 
@@ -88,7 +125,7 @@ export default function MoodNoteScreen() {
       setStep(totalSteps + 1);
     } catch (e) {
       console.error(e);
-      showAlert(t('error'), t('mood-note.submitError'));
+      showToast({ tone: 'error', title: t('error'), message: t('mood-note.submitError') });
     } finally {
       setSubmitting(false);
     }
@@ -116,7 +153,45 @@ export default function MoodNoteScreen() {
         <View>
           <Text style={styles.stepTitle}>{t('mood-note.overall.title')}</Text>
           <Text style={styles.stepHint}>{t('mood-note.overall.hint')}</Text>
+          {drop ? <Text style={styles.dropBanner}>{t('mood-note.dropBanner')}</Text> : null}
+          {hints?.overallAverage != null ? (
+            <Text style={styles.avg}>
+              {t('mood-note.yourAverage', { value: hints.overallAverage.toFixed(1) })}
+            </Text>
+          ) : null}
           <MoodSelector mood={overallMood} setMood={setOverallMood} />
+          <Text style={styles.noteLabel}>
+            {overallNoteRequired
+              ? t('mood-note.overallNoteRequired')
+              : t('mood-note.aspectNoteOptional')}
+          </Text>
+          {overallNoteRequired ? (
+            <Text style={styles.whyRequired}>{t('mood-note.whyRequired')}</Text>
+          ) : null}
+          <TextInput
+            style={styles.input}
+            placeholder={t('mood-note.overallNotePlaceholder')}
+            placeholderTextColor="#AFAFAF"
+            value={overallNote}
+            onChangeText={setOverallNote}
+            multiline
+            maxLength={1000}
+          />
+          {overallNoteRequired || overallNote.trim().length > 0 ? (
+            <Text
+              style={[
+                styles.counter,
+                overallNote.trim().length > 0 &&
+                  overallNote.trim().length < noteMin &&
+                  styles.counterWarn,
+              ]}
+            >
+              {t('mood-note.aspectNoteHint', {
+                min: noteMin,
+                count: overallNote.trim().length,
+              })}
+            </Text>
+          ) : null}
         </View>
       );
     }
@@ -128,6 +203,8 @@ export default function MoodNoteScreen() {
           aspect={key}
           score={specific[key].score}
           note={specific[key].note}
+          noteRequired={aspectNoteRequired(key, specific[key].score)}
+          average={hints?.aspectAverages?.[key]}
           setScore={(score) =>
             setSpecific((prev) => ({ ...prev, [key]: { ...prev[key], score } }))
           }
@@ -146,21 +223,20 @@ export default function MoodNoteScreen() {
           <Text style={styles.summaryLine}>
             {t('mood-note.overall.short')}: {overallMood}/6
           </Text>
+          <Text style={styles.summaryNote} numberOfLines={2}>
+            {overallNote.trim()}
+          </Text>
           {aspects.map((key) => (
-            <Text key={key} style={styles.summaryLine}>
-              {t(`mood-note.aspects.${key}.title`)}: {specific[key].score}/6
-            </Text>
+            <View key={key} style={styles.summaryItem}>
+              <Text style={styles.summaryLine}>
+                {t(`mood-note.aspects.${key}.title`)}: {specific[key].score}/6
+              </Text>
+              <Text style={styles.summaryNote} numberOfLines={2}>
+                {specific[key].note.trim()}
+              </Text>
+            </View>
           ))}
         </View>
-        <TextInput
-          style={styles.input}
-          placeholder={t('mood-note.overallNotePlaceholder')}
-          placeholderTextColor="#AFAFAF"
-          value={overallNote}
-          onChangeText={setOverallNote}
-          multiline
-          maxLength={1000}
-        />
       </View>
     );
   };
@@ -268,8 +344,34 @@ const styles = StyleSheet.create({
     paddingTop: 8,
     backgroundColor: Brand.mist,
   },
+  noteLabel: {
+    fontFamily: gameFonts.bold,
+    fontSize: 14,
+    color: Brand.ink,
+    marginTop: 8,
+    marginBottom: 6,
+  },
+  whyRequired: {
+    fontFamily: gameFonts.regular,
+    fontSize: 13,
+    color: Brand.streak,
+    marginBottom: 6,
+    lineHeight: 18,
+  },
+  dropBanner: {
+    fontFamily: gameFonts.bold,
+    fontSize: 13,
+    color: Brand.red,
+    marginBottom: 8,
+    lineHeight: 18,
+  },
+  avg: {
+    fontFamily: gameFonts.bold,
+    fontSize: 13,
+    color: Brand.blue,
+    marginBottom: 4,
+  },
   input: {
-    marginTop: 12,
     minHeight: 100,
     borderWidth: 2,
     borderColor: '#E5E5E5',
@@ -281,16 +383,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     textAlignVertical: 'top',
   },
+  counter: {
+    marginTop: 6,
+    fontFamily: gameFonts.semi,
+    fontSize: 12,
+    color: '#888',
+  },
+  counterWarn: {
+    color: Brand.streak,
+  },
   summaryList: {
     backgroundColor: Brand.greenSoft,
     borderRadius: 14,
     padding: 14,
-    gap: 6,
+    gap: 10,
+  },
+  summaryItem: {
+    gap: 2,
   },
   summaryLine: {
     fontFamily: gameFonts.bold,
     fontSize: 15,
     color: Brand.ink,
+  },
+  summaryNote: {
+    fontFamily: gameFonts.regular,
+    fontSize: 13,
+    color: '#555',
+    lineHeight: 18,
   },
   success: { alignItems: 'center', paddingVertical: 24 },
   successEmoji: { fontSize: 64, marginBottom: 8 },

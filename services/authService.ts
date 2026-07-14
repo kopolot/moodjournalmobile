@@ -89,18 +89,9 @@ export class AuthService {
    */
   static async logout(): Promise<boolean> {
     try {
-      // Opcjonalnie: powiadom serwer o wylogowaniu
-      try {
-        await apiClient.post(API_CONFIG.ENDPOINTS.AUTH.LOGOUT);
-      } catch (e) {
-        console.warn('Failed to notify server about logout:', e);
-        // Ignorujemy błędy, ponieważ wylogowanie powinno działać
-        // nawet jeśli serwer jest niedostępny
-      }
-
-      // Usuń dane sesji lokalnie
       await AsyncStorage.multiRemove([
-        STORAGE_CONFIG.USER_TOKEN_KEY
+        STORAGE_CONFIG.USER_TOKEN_KEY,
+        STORAGE_CONFIG.USER_DATA_KEY,
       ]);
 
       return true;

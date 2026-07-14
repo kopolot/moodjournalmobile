@@ -1,6 +1,6 @@
-# Agent guide — MoodJournal Mobile
+# Agent guide — MoodDic Mobile
 
-Abandoned Expo example. Keep changes small; do not pretend mood data syncs to the API unless the backend gains endpoints.
+Expo client for MoodDic. Mood check-ins sync to the Symfony API (`/mood`). Keep the Duolingo-like gamified language unless asked to change brand direction.
 
 ## Related repo
 
@@ -12,7 +12,8 @@ API + Docker: https://github.com/kopolot/moodjournal
 - Entry: `expo-router/entry`
 - From SDK 56+: **no** `@react-navigation/*` imports in app code  
   Use `expo-router`, `expo-router/react-navigation`, `expo-router/js-tabs`, `expo-router/drawer`
-- Prefer `utils/showAlert` over raw `Alert.alert` when web matters
+- Prefer `utils/alert` `showAlert` over raw `Alert.alert` when web matters
+- Install with `npm install --legacy-peer-deps` (TS 6 vs react-i18next peer)
 
 ## Dev server
 
@@ -29,23 +30,37 @@ Logic lives in `config/appConfig.ts`. Physical devices need the machine LAN IP (
 
 Login body: `{ email, password }`. Token: `data.jwt_token`.
 
+Mood endpoints: see `API_CONFIG.ENDPOINTS.MOOD` in `config/appConfig.ts` and `services/moodService.ts`.
+
+Aspect keys (must match API): `mood`, `relationship`, `activity`, `environment`.
+
 ## Layout map
 
 | Area | Paths |
 |------|--------|
 | Auth screens | `app/(auth)/` |
-| Signed-in tabs | `app/(app)/` |
-| Root providers | `app/_layout.tsx` |
-| HTTP | `services/apiClient.ts`, `services/authService.ts` |
-| Auth state | `contexts/AuthContext.tsx` |
+| Signed-in tabs | `app/(app)/` — `index`, `history`, `mood-note`, `profile` |
+| Root providers | `app/_layout.tsx` (Nunito fonts + Auth/I18n) |
+| HTTP | `services/apiClient.ts`, `authService.ts`, `moodService.ts` |
+| Gamified UI | `components/game/`, `styles/gameStyles.ts`, `styles/colors.ts` |
+| Auth state | `contexts/AuthContext.tsx` (`refreshUser` available) |
+
+Legacy route `explore` redirects to `history` and stays hidden from the tab bar (`href: null`).
+
+## Product / UX notes
+
+- First-session vibe: playful, streak/XP heavy (Duolingo-inspired), green-first brand — avoid purple AI defaults and cream/serif terracotta looks
+- Plus / AI analysis is **teaser only** until billing + backend AI exist
+- Prefer i18n keys over hardcoded PL/EN strings in new UI
 
 ## Do not
 
 - Import `@react-navigation/*` directly
 - Point phone clients at `localhost` for the API
 - Commit `package.json.bac`, `.expo/`, or secrets
+- Persist mood only locally when API is available — use `/mood`
 - Add project MCP servers unless there is a concrete tool need (none required today)
 
 ## Commits
 
-Scope mobile work clearly (`chore:`, `fix:`, `feat:`). Stage named files; keep lockfile policy as in `.gitignore` (`package-lock.json` is ignored in this repo).
+Scope mobile work clearly (`feat(mood):`, `chore:`, `fix:`). Stage named files; keep lockfile policy as in `.gitignore` (`package-lock.json` is ignored in this repo).

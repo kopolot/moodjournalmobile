@@ -10,6 +10,7 @@ interface AuthContextType {
   login: (email: string, password: string, remember_me: boolean) => Promise<ApiResponse>;
   register: ( email: string, password: string, repeatPassword: string, firstname: string, acceptPrivacyPolicy: boolean) => Promise<ApiResponse>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   isConnected: boolean;
 }
 
@@ -130,6 +131,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const userData = await AuthService.loadCurrentUser();
+      if (userData) {
+        setUser(userData);
+        setIsLoggedIn(true);
+      }
+    } catch (error) {
+      console.error('Refresh user error:', error);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -138,6 +151,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         login,
         register,
         logout,
+        refreshUser,
         isConnected
       }}
     >

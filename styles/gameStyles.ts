@@ -1,0 +1,172 @@
+import { StyleSheet } from 'react-native';
+import { Brand } from './colors';
+
+export const gameFonts = {
+  regular: 'Nunito_400Regular',
+  semi: 'Nunito_600SemiBold',
+  bold: 'Nunito_700Bold',
+  extra: 'Nunito_800ExtraBold',
+};
+
+export const gameStyles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: Brand.mist,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 120,
+  },
+  topBar: {
+    paddingTop: 56,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: Brand.mist,
+  },
+  brand: {
+    fontFamily: gameFonts.extra,
+    fontSize: 28,
+    color: Brand.ink,
+    letterSpacing: -0.5,
+  },
+  brandAccent: {
+    color: Brand.green,
+  },
+  heroPanel: {
+    borderRadius: 24,
+    padding: 22,
+    backgroundColor: Brand.green,
+    marginBottom: 18,
+    overflow: 'hidden',
+  },
+  heroTitle: {
+    fontFamily: gameFonts.extra,
+    fontSize: 26,
+    color: '#fff',
+    marginBottom: 6,
+  },
+  heroSubtitle: {
+    fontFamily: gameFonts.semi,
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.92)',
+    lineHeight: 22,
+    marginBottom: 18,
+  },
+  sectionTitle: {
+    fontFamily: gameFonts.extra,
+    fontSize: 20,
+    color: Brand.ink,
+    marginBottom: 10,
+    marginTop: 8,
+  },
+  panel: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 18,
+    marginBottom: 14,
+    borderWidth: 2,
+    borderColor: '#E5E5E5',
+  },
+  panelTitle: {
+    fontFamily: gameFonts.bold,
+    fontSize: 17,
+    color: Brand.ink,
+    marginBottom: 6,
+  },
+  panelText: {
+    fontFamily: gameFonts.regular,
+    fontSize: 15,
+    color: '#777',
+    lineHeight: 21,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  pill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderWidth: 2,
+    borderColor: '#E5E5E5',
+    gap: 6,
+  },
+  pillText: {
+    fontFamily: gameFonts.extra,
+    fontSize: 14,
+    color: Brand.ink,
+  },
+  primaryBtn: {
+    backgroundColor: Brand.green,
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    borderBottomWidth: 4,
+    borderBottomColor: Brand.greenDark,
+  },
+  primaryBtnDisabled: {
+    backgroundColor: '#B7B7B7',
+    borderBottomColor: '#8F8F8F',
+  },
+  primaryBtnText: {
+    fontFamily: gameFonts.extra,
+    fontSize: 17,
+    color: '#fff',
+    letterSpacing: 0.3,
+  },
+  secondaryBtn: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#E5E5E5',
+    borderBottomWidth: 4,
+  },
+  secondaryBtnText: {
+    fontFamily: gameFonts.extra,
+    fontSize: 16,
+    color: Brand.ink,
+  },
+  lockedBanner: {
+    backgroundColor: Brand.creamWash,
+    borderRadius: 20,
+    padding: 18,
+    borderWidth: 2,
+    borderColor: Brand.gold,
+    marginBottom: 14,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 24,
+  },
+  emptyEmoji: {
+    fontSize: 56,
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    fontFamily: gameFonts.extra,
+    fontSize: 22,
+    color: Brand.ink,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyText: {
+    fontFamily: gameFonts.regular,
+    fontSize: 15,
+    color: '#777',
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 20,
+  },
+});

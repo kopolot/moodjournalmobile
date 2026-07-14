@@ -56,7 +56,7 @@ export default function LoginScreen() {
           style={styles.logo}
           resizeMode="contain"
         />
-        <Text style={styles.appName}>Mood App</Text>
+        <Text style={styles.appName}>MoodDic</Text>
       </View>
 
       <View style={styles.formContainer}>

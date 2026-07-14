@@ -67,6 +67,10 @@ export default function RegisterScreen() {
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
       <StatusBar style="auto" />
 
+      <View style={styles.logoContainer}>
+        <Text style={styles.appName}>MoodDic</Text>
+      </View>
+
       <View style={styles.formContainer}>
         <Text style={styles.title}>{t('register.title')}</Text>
         <Text style={styles.subtitle}>{t('register.subtitle')}</Text>

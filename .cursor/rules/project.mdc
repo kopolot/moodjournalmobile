@@ -1,14 +1,14 @@
 ---
-description: MoodJournal mobile — project status and invariants
+description: MoodDic mobile — project status and invariants
 alwaysApply: true
 ---
 
-# MoodJournal Mobile
+# MoodDic Mobile
 
-Abandoned Expo SDK 57 portfolio client. API lives in `moodjournal` on GitHub.
+Expo SDK 57 client for MoodDic. API lives in `moodjournal` on GitHub.
 
-- Mood UI is local-only; there is no journal API.
+- Mood check-ins sync via `/mood` (`services/moodService.ts`) — do not keep new flows local-only.
 - Use Expo Router navigation helpers — never import `@react-navigation/*` in app code.
-- Prefer `npm start` (LAN) or `npm run start:offline` for device work.
+- Prefer `npm start` (LAN) or `npm run start:offline` for device work; install with `--legacy-peer-deps`.
 - Resolve API URL via `config/appConfig.ts` / `EXPO_PUBLIC_API_URL` (port 8080).
-- No project-scoped MCP required.
+- Keep the gamified green brand unless asked otherwise. No project-scoped MCP required.

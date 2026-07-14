@@ -5,65 +5,84 @@ import { useAuth } from '@/contexts/AuthContext';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/styles/colors';
+import { Brand, Colors } from '@/styles/colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import OfflineBar from '@/components/ui/OfflineBar';
-// import { containers } from '@/constants/Styles';
-import useStyles from '@/hooks/useStyles';
+import { useI18n } from '@/contexts/I18nContext';
+import { gameFonts } from '@/styles/gameStyles';
 
 export default function AppLayout() {
   const { isLoggedIn, isConnected } = useAuth();
-  const colorScheme = useColorScheme();
-  const { containers } = useStyles();
+  const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
+  const { t } = useI18n();
 
-  // Jeśli użytkownik nie jest zalogowany, przekieruj do ekranu logowania
   if (!isLoggedIn) {
     return <Redirect href="/(auth)" />;
   }
 
   return (
-    <View style={{ flex: 1, ...containers.card, padding: 0 }}>
+    <View style={{ flex: 1 }}>
       {!isConnected && <OfflineBar />}
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+          tabBarActiveTintColor: Colors[colorScheme].tint,
+          tabBarInactiveTintColor: Colors[colorScheme].tabIconDefault,
           headerShown: false,
           tabBarButton: HapticTab,
           tabBarBackground: TabBarBackground,
+          tabBarLabelStyle: {
+            fontFamily: gameFonts.bold,
+            fontSize: 12,
+          },
           tabBarStyle: Platform.select({
             ios: {
-              // Use a transparent background on iOS to show the blur effect
               position: 'absolute',
+              borderTopWidth: 2,
+              borderTopColor: '#E5E5E5',
             },
-            default: {},
+            default: {
+              borderTopWidth: 2,
+              borderTopColor: '#E5E5E5',
+              height: 64,
+              paddingBottom: 8,
+              paddingTop: 6,
+            },
           }),
         }}>
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Główna',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+            title: t('tabs.home'),
+            tabBarIcon: ({ color }) => <IconSymbol size={26} name="house.fill" color={color} />,
           }}
         />
         <Tabs.Screen
-          name="explore"
+          name="history"
           options={{
-            title: 'Przeglądaj',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-          }}
-        />
-        <Tabs.Screen
-          name="profile"
-          options={{
-            title: 'Profil',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+            title: t('tabs.history'),
+            tabBarIcon: ({ color }) => <IconSymbol size={26} name="book.fill" color={color} />,
           }}
         />
         <Tabs.Screen
           name="mood-note"
           options={{
-            title: 'Formularz',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="square.and.pencil" color={color} />, // lub inna ikona
+            title: t('tabs.checkin'),
+            tabBarIcon: ({ color }) => (
+              <IconSymbol size={28} name="plus.circle.fill" color={color || Brand.green} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: t('tabs.profile'),
+            tabBarIcon: ({ color }) => <IconSymbol size={26} name="person.fill" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="explore"
+          options={{
+            href: null,
           }}
         />
       </Tabs>

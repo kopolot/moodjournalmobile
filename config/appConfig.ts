@@ -125,8 +125,14 @@ export const API_CONFIG = {
     },
     USER: {
       PROFILE: '/user/get',
-      UPDATE_PROFILE: '',
-      CHANGE_PASSWORD: '',
+      UPDATE_PROFILE: '/user/edit',
+      CHANGE_PASSWORD: '/user/resetpassword',
+    },
+    MOOD: {
+      LIST: '/mood',
+      CREATE: '/mood',
+      STATS: '/mood/stats',
+      DETAIL: (id: string) => `/mood/${id}`,
     },
     CONTENT: {},
   },
@@ -152,8 +158,8 @@ export const STORAGE_CONFIG = {
  */
 export const APP_CONFIG = {
   DEBUG: environments[ACTIVE_ENV].DEBUG,
-  VERSION: '0.0.0',
-  APP_NAME: 'Mood App',
+  VERSION: '0.2.0',
+  APP_NAME: 'MoodDic',
   ENVIRONMENT: ACTIVE_ENV,
 
   // Ustawienia związane z UI

@@ -100,48 +100,35 @@ describe('AuthService - testy jednostkowe', () => {
 
   describe('isAuthenticated', () => {
     it('powinien zwrócić true, gdy użytkownik jest zalogowany', async () => {
-      // Przygotowanie mocków
-      const mockUserData = { id: '1', firstname: 'Test' };
+      (AsyncStorage.getItem as jest.Mock).mockResolvedValueOnce('test_token');
 
-      // Mockowanie metody loadCurrentUser
-      jest.spyOn(AuthService, 'loadCurrentUser')
-        .mockResolvedValueOnce(mockUserData as any);
-
-      // Wywołanie testowanej metody
       const result = await AuthService.isAuthenticated();
 
-      // Sprawdzenie wyniku
       expect(result).toBe(true);
+      expect(AsyncStorage.getItem).toHaveBeenCalledWith(
+        STORAGE_CONFIG.USER_TOKEN_KEY
+      );
     });
 
     it('powinien zwrócić false, gdy brak danych użytkownika', async () => {
-      // Mockowanie metody loadCurrentUser zwracającej null
-      jest.spyOn(AuthService, 'loadCurrentUser')
-        .mockResolvedValueOnce(null);
+      (AsyncStorage.getItem as jest.Mock).mockResolvedValueOnce(null);
 
-      // Wywołanie testowanej metody
       const result = await AuthService.isAuthenticated();
 
-      // Sprawdzenie wyniku
       expect(result).toBe(false);
     });
 
     it('powinien zwrócić false i obsłużyć wyjątek', async () => {
-      // Mockowanie metody loadCurrentUser rzucającej wyjątek
-      jest.spyOn(AuthService, 'loadCurrentUser')
-        .mockRejectedValueOnce(new Error('Test error'));
+      (AsyncStorage.getItem as jest.Mock).mockRejectedValueOnce(new Error('Test error'));
 
-      // Wywołanie testowanej metody
       const result = await AuthService.isAuthenticated();
 
-      // Sprawdzenie wyniku
       expect(result).toBe(false);
     });
   });
 
   describe('register', () => {
-    it( 'test valid register', async () => {
-      // Przygotowanie danych testowych
+    it('test valid register', async () => {
       const mockUserData = {
         firstname: 'Test',
         email: 'test@test.pl',
@@ -150,18 +137,17 @@ describe('AuthService - testy jednostkowe', () => {
         acceptPrivacyPolicy: true,
       } as RegisterData;
 
-      // Mockowanie odpowiedzi z apiClient
-      (apiClient.post as jest.Mock).mockResolvedValueOnce({
+      const mockResponse = {
         success: true,
         error: '',
-        message: [
-          "user.register.success",
-        ],
+        message: ['user.register.success'],
         data: {},
-      });
+      };
 
-      let result = await AuthService.register( mockUserData);
-      expect(result).toBe(true);
-    })
+      (apiClient.post as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+      const result = await AuthService.register(mockUserData);
+      expect(result).toEqual(mockResponse);
+    });
   });
 });

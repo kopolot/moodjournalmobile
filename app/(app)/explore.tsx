@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { appScreensStyles } from '@/styles/appScreensStyles';
 
 interface ExploreItem {
   id: string;
@@ -35,30 +36,27 @@ export default function ExploreScreen() {
   ];
 
   return (
-    <View style={styles.container}>
+    <View style={appScreensStyles.container}>
       <StatusBar style="auto" />
-      
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Przeglądaj</Text>
-        <Text style={styles.headerSubtitle}>Odkryj nową zawartość</Text>
+      <View style={appScreensStyles.header}>
+        <Text style={appScreensStyles.headerTitle}>Przeglądaj</Text>
+        <Text style={appScreensStyles.headerSubtitle}>Odkryj nową zawartość</Text>
       </View>
-      
-      <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+      <ScrollView style={appScreensStyles.content} contentContainerStyle={appScreensStyles.contentContainer}>
         {exploreItems.map((item) => (
-          <TouchableOpacity key={item.id} style={styles.exploreCard}>
-            <View style={styles.cardContent}>
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardDescription}>{item.description}</Text>
+          <TouchableOpacity key={item.id} style={appScreensStyles.exploreCard}>
+            <View style={appScreensStyles.cardContent}>
+              <Text style={appScreensStyles.cardTitle}>{item.title}</Text>
+              <Text style={appScreensStyles.cardDescription}>{item.description}</Text>
             </View>
-            <View style={styles.cardIcon}>
+            <View style={appScreensStyles.cardIcon}>
               <IconSymbol name="arrow.right" size={24} color="#3498db" />
             </View>
           </TouchableOpacity>
         ))}
-        
-        <View style={styles.infoSection}>
-          <Text style={styles.infoTitle}>Co nowego?</Text>
-          <Text style={styles.infoText}>
+        <View style={appScreensStyles.infoSection}>
+          <Text style={appScreensStyles.infoTitle}>Co nowego?</Text>
+          <Text style={appScreensStyles.infoText}>
             Ta sekcja będzie się wypełniać nową zawartością dostosowaną do Twoich preferencji.
             Eksploruj różne kategorie, aby otrzymywać spersonalizowane treści.
           </Text>
@@ -67,88 +65,3 @@ export default function ExploreScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    backgroundColor: '#3498db',
-    paddingTop: 60,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-  },
-  headerTitle: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    color: '#fff',
-    opacity: 0.9,
-    marginTop: 5,
-  },
-  content: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 20,
-  },
-  exploreCard: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 3,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  cardContent: {
-    flex: 1,
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
-  },
-  cardDescription: {
-    fontSize: 14,
-    color: '#777',
-  },
-  cardIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f0f8ff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  infoSection: {
-    backgroundColor: '#e1f5fe',
-    borderRadius: 10,
-    padding: 20,
-    marginVertical: 10,
-  },
-  infoTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#0277bd',
-    marginBottom: 10,
-  },
-  infoText: {
-    fontSize: 14,
-    color: '#0277bd',
-    lineHeight: 20,
-  },
-});

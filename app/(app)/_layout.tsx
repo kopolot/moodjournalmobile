@@ -15,15 +15,15 @@ export default function AppLayout() {
   const { isLoggedIn, isConnected } = useAuth();
   const colorScheme = useColorScheme();
   const { containers } = useStyles();
-  
+
   // Jeśli użytkownik nie jest zalogowany, przekieruj do ekranu logowania
   if (!isLoggedIn) {
     return <Redirect href="/(auth)" />;
   }
 
-  return (  
+  return (
     <View style={{ flex: 1, ...containers.card, padding: 0 }}>
-      {!isConnected && <OfflineBar />}  
+      {!isConnected && <OfflineBar />}
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
@@ -57,6 +57,13 @@ export default function AppLayout() {
           options={{
             title: 'Profil',
             tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="mood-note"
+          options={{
+            title: 'Formularz',
+            tabBarIcon: ({ color }) => <IconSymbol size={28} name="square.and.pencil" color={color} />, // lub inna ikona
           }}
         />
       </Tabs>

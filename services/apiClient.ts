@@ -39,10 +39,13 @@ class ApiClient {
     endpoint: string,
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
     data: Array<any>,
-    options: ApiRequestOptions = { requiresAuth: true }
+    options: ApiRequestOptions = {}
   ): Promise<ApiResponse<T>> {
     try {
       const url = endpoint;
+      // Default only applies when `options` is omitted — merge so partial
+      // `{ headers }` still keeps auth on (mood create / checkout).
+      const requiresAuth = options.requiresAuth !== false;
       
       // Przygotowanie nagłówków
       let headers: Record<string, string> = {
@@ -50,7 +53,7 @@ class ApiClient {
       };
       
       // Dodanie tokenu autoryzacji, jeśli wymagane
-      if (options.requiresAuth) {
+      if (requiresAuth) {
         const token = await AsyncStorage.getItem(STORAGE_CONFIG.USER_TOKEN_KEY);
         if (token) {
           headers['Authorization'] = `Bearer ${token}`;

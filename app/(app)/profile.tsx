@@ -9,46 +9,59 @@ import {
   Switch,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { apiClient } from '@/services/apiClient';
 import { API_CONFIG, APP_CONFIG } from '@/config/appConfig';
 import { MoodService, MoodStats } from '@/services/moodService';
+import { NotificationService } from '@/services/notificationService';
 import PrimaryButton from '@/components/game/PrimaryButton';
 import XpBar from '@/components/game/XpBar';
 import StreakFlame from '@/components/game/StreakFlame';
 import { gameFonts, gameStyles } from '@/styles/gameStyles';
 import { Brand } from '@/styles/colors';
-import { showAlert } from '@/utils/alert';
+import { useFeedback } from '@/contexts/FeedbackContext';
 
 export default function ProfileScreen() {
   const { user, logout, refreshUser } = useAuth();
   const { t, language, setLanguage } = useI18n();
+  const { showToast, showConfirm } = useFeedback();
+  const router = useRouter();
   const [stats, setStats] = useState<MoodStats | null>(null);
   const [firstname, setFirstname] = useState(user?.firstname ?? '');
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [dailyNotifications, setDailyNotifications] = useState(true);
 
   useFocusEffect(
     useCallback(() => {
       setFirstname(user?.firstname ?? '');
       MoodService.getStats().then(setStats);
+      NotificationService.isEnabled().then(setDailyNotifications);
     }, [user?.firstname])
   );
 
   const handleLogout = async () => {
+    const ok = await showConfirm({
+      title: t('profile.logout'),
+      message: t('profile.logoutConfirm'),
+      confirmLabel: t('profile.logout'),
+      cancelLabel: t('common.cancel'),
+      destructive: true,
+    });
+    if (!ok) return;
     try {
       await logout();
     } catch {
-      showAlert(t('error'), t('profile.logoutError'));
+      showToast({ tone: 'error', title: t('error'), message: t('profile.logoutError') });
     }
   };
 
   const saveProfile = async () => {
     const trimmed = firstname.trim();
     if (trimmed.length < 2) {
-      showAlert(t('error'), t('profile.nameInvalid'));
+      showToast({ tone: 'error', title: t('error'), message: t('profile.nameInvalid') });
       return;
     }
     try {
@@ -57,14 +70,18 @@ export default function ProfileScreen() {
         firstname: trimmed,
       });
       if (!response.success) {
-        showAlert(t('error'), t(response.message?.[0] || 'profile.saveError'));
+        showToast({
+          tone: 'error',
+          title: t('error'),
+          message: t(response.message?.[0] || 'profile.saveError'),
+        });
         return;
       }
       await refreshUser?.();
       setEditing(false);
-      showAlert(t('success'), t('profile.saveSuccess'));
+      showToast({ tone: 'success', title: t('success'), message: t('profile.saveSuccess') });
     } catch {
-      showAlert(t('error'), t('profile.saveError'));
+      showToast({ tone: 'error', title: t('error'), message: t('profile.saveError') });
     } finally {
       setSaving(false);
     }
@@ -72,6 +89,20 @@ export default function ProfileScreen() {
 
   const toggleLanguage = async (toPl: boolean) => {
     await setLanguage(toPl ? 'pl' : 'en');
+  };
+
+  const toggleNotifications = async (enabled: boolean) => {
+    setDailyNotifications(enabled);
+    const ok = await NotificationService.setEnabled(enabled);
+    if (enabled && !ok) {
+      setDailyNotifications(false);
+      showToast({ tone: 'info', message: t('profile.notificationsDenied') });
+      return;
+    }
+    showToast({
+      tone: 'success',
+      message: enabled ? t('profile.notificationsOn') : t('profile.notificationsOff'),
+    });
   };
 
   return (
@@ -151,12 +182,43 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      <View style={gameStyles.lockedBanner}>
-        <Text style={gameStyles.panelTitle}>🚀 MoodDic Plus</Text>
-        <Text style={gameStyles.panelText}>{t('profile.plusTeaser')}</Text>
+      <View style={gameStyles.panel}>
+        <View style={[gameStyles.row, { justifyContent: 'space-between' }]}>
+          <View style={{ flex: 1, paddingRight: 12 }}>
+            <Text style={gameStyles.panelTitle}>{t('profile.dailyNotifications')}</Text>
+            <Text style={gameStyles.panelText}>{t('profile.dailyNotificationsHint')}</Text>
+          </View>
+          <Switch
+            value={dailyNotifications}
+            onValueChange={toggleNotifications}
+            trackColor={{ true: Brand.green, false: '#CFCFCF' }}
+          />
+        </View>
       </View>
 
-      <TouchableOpacity onPress={() => showAlert(t('profile.aboutTitle'), t('profile.aboutBody', { version: APP_CONFIG.VERSION }))}>
+      <View style={gameStyles.lockedBanner}>
+        <Text style={gameStyles.panelTitle}>
+          🚀 {t('profile.planTitle', { tier: (stats?.subscriptionTier || 'free').toUpperCase() })}
+        </Text>
+        <Text style={gameStyles.panelText}>{t('profile.plusTeaser')}</Text>
+        <PrimaryButton
+          title={t('profile.manageSubscription')}
+          variant="light"
+          onPress={() => router.push('/(app)/subscription')}
+          style={{ marginTop: 12 }}
+        />
+      </View>
+
+      <TouchableOpacity
+        onPress={() =>
+          showToast({
+            tone: 'info',
+            title: t('profile.aboutTitle'),
+            message: t('profile.aboutBody', { version: APP_CONFIG.VERSION }),
+            durationMs: 4000,
+          })
+        }
+      >
         <Text style={styles.aboutLink}>{t('profile.about')}</Text>
       </TouchableOpacity>
 

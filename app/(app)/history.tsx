@@ -14,10 +14,11 @@ import { MoodEntry, MoodService } from '@/services/moodService';
 import { MoodScale, Brand } from '@/styles/colors';
 import { gameFonts, gameStyles } from '@/styles/gameStyles';
 import PrimaryButton from '@/components/game/PrimaryButton';
-import { showAlert } from '@/utils/alert';
+import { useFeedback } from '@/contexts/FeedbackContext';
 
 export default function HistoryScreen() {
   const { t, language } = useI18n();
+  const { showToast, showConfirm } = useFeedback();
   const router = useRouter();
   const [items, setItems] = useState<MoodEntry[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -39,22 +40,23 @@ export default function HistoryScreen() {
     setRefreshing(false);
   };
 
-  const onDelete = (entry: MoodEntry) => {
-    showAlert(t('history.deleteTitle'), t('history.deleteBody'), [
-      { text: t('common.cancel'), style: 'cancel' },
-      {
-        text: t('history.deleteConfirm'),
-        style: 'destructive',
-        onPress: async () => {
-          const ok = await MoodService.remove(entry.id);
-          if (ok) {
-            setItems((prev) => prev.filter((item) => item.id !== entry.id));
-          } else {
-            showAlert(t('error'), t('history.deleteError'));
-          }
-        },
-      },
-    ]);
+  const onDelete = async (entry: MoodEntry) => {
+    const accepted = await showConfirm({
+      title: t('history.deleteTitle'),
+      message: t('history.deleteBody'),
+      confirmLabel: t('history.deleteConfirm'),
+      cancelLabel: t('common.cancel'),
+      destructive: true,
+    });
+    if (!accepted) return;
+
+    const ok = await MoodService.remove(entry.id);
+    if (ok) {
+      setItems((prev) => prev.filter((item) => item.id !== entry.id));
+      showToast({ tone: 'success', message: t('history.deleteSuccess') });
+    } else {
+      showToast({ tone: 'error', title: t('error'), message: t('history.deleteError') });
+    }
   };
 
   const formatDate = (iso: string) => {

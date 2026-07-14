@@ -54,7 +54,8 @@
     "entries": "{{count}} wpisów",
     "bestStreak": "Najlepsza seria: {{count}} dni",
     "aiTitle": "Trener AI nastroju",
-    "aiTeaser": "MoodDic Plus odblokuje głębszą analizę AI wzorców w nastroju, relacjach, aktywności i otoczeniu."
+    "aiTeaser": "MoodDic Plus/Pro odblokuje głębszą analizę AI wzorców — wejdź w Profil → Subskrypcja.",
+    "aiUnlocked": "Plan Plus/Pro aktywny — analysis AI (placeholder) jest odblokowane."
   },
   "history": {
     "title": "Historia",
@@ -63,6 +64,7 @@
     "deleteTitle": "Usunąć wpis?",
     "deleteBody": "Check-in zostanie trwale usunięty.",
     "deleteConfirm": "Usuń",
+    "deleteSuccess": "Wpis usunięty.",
     "deleteError": "Nie udało się usunąć wpisu."
   },
   "mood": {
@@ -84,33 +86,58 @@
     "submitError": "Nie udało się zapisać check-inu.",
     "successTitle": "Quest ukończony!",
     "successBody": "Mapa nastroju zapisana. Utrzymaj serię jutro.",
-    "aspectNotePlaceholder": "Opcjonalna notatka do tego aspektu…",
-    "overallNotePlaceholder": "Coś jeszcze na myśli?",
+    "incompleteTitle": "Jeszcze chwila",
+    "incompleteBody": "Dopisz ocenę i — jeśli wymagane — krótki opis (min. {{min}} znaków).",
+    "aspectNoteRequired": "Krótki opis (wymagany)",
+    "aspectNoteOptional": "Krótki opis (opcjonalny)",
+    "aspectNotePlaceholder": "Np. co na Ciebie wpłynęło…",
+    "aspectNoteHint": "{{count}} / min. {{min}} znaków",
+    "overallNoteRequired": "Krótki opis (wymagany)",
+    "overallNotePlaceholder": "Jak czujesz się psychicznie i emocjonalnie?",
+    "whyRequired": "Brak historii, ocena odbiega od średniej albo ostatnie ~1,5 tygodnia poszło w dół — dopisz kontekst.",
+    "yourAverage": "Twoja średnia: {{value}}/6",
+    "dropBanner": "Uwaga: średnia z ostatnich ~1,5 tygodnia spadła zauważalnie. Opisy są obowiązkowe.",
     "overall": {
-      "title": "Jak czujesz się ogólnie?",
-      "hint": "Wybierz buźkę, która trafia w Twój vibe.",
-      "short": "Ogółem"
+      "title": "Zdrowie psychiczne — jak jest ogólnie?",
+      "hint": "To Twoja ogólna ocena stanu psychicznego. Wybierz buźkę i dopisz krótki opis.",
+      "short": "Zdrowie psychiczne"
     },
     "summary": {
-      "title": "Szybkie podsumowanie",
-      "hint": "Dodaj opcjonalną notatkę i zbierz XP."
+      "title": "Podsumowanie",
+      "hint": "Sprawdź oceny i zbierz XP."
     },
     "aspects": {
-      "mood": {
-        "title": "Wewnętrzny nastrój",
-        "hint": "Twoja emocjonalna pogoda w środku."
+      "close_relationships": {
+        "title": "Relacje z bliskimi",
+        "hint": "Rodzina, przyjaciele, ważne więzi."
       },
-      "relationship": {
-        "title": "Relacje",
-        "hint": "Ludzie, bliskość, kontakt."
+      "romantic_relationships": {
+        "title": "Relacje miłosne",
+        "hint": "Partnerstwo, romantyczna bliskość, randki."
       },
-      "activity": {
-        "title": "Aktywność",
-        "hint": "Energia, fokus, rzeczy zrobione."
+      "duties": {
+        "title": "Obowiązki",
+        "hint": "Co masz na głowie i jak się z tym czujesz."
+      },
+      "physical_health": {
+        "title": "Zdrowie fizyczne",
+        "hint": "Ciało, sen, energia, samopoczucie fizyczne."
+      },
+      "finances": {
+        "title": "Stan materialny",
+        "hint": "Pieniądze, bezpieczeństwo, codzienne potrzeby."
+      },
+      "relaxation": {
+        "title": "Relaks",
+        "hint": "Odpoczynek, zabawa, regeneracja."
+      },
+      "growth_spirituality": {
+        "title": "Samorozwój i duchowość",
+        "hint": "Nauka, sens, praktyki, rozwój wewnętrzny."
       },
       "environment": {
         "title": "Otoczenie",
-        "hint": "Miejsce, hałas, komfort wokół Ciebie."
+        "hint": "Dom, miejsce, hałas, komfort wokół Ciebie."
       }
     }
   },
@@ -122,12 +149,36 @@
     "saveSuccess": "Profil zaktualizowany.",
     "saveError": "Nie udało się zaktualizować profilu.",
     "logout": "Wyloguj",
+    "logoutConfirm": "Na pewno chcesz się wylogować?",
     "logoutError": "Nie udało się wylogować.",
     "languagePl": "Język polski",
-    "plusTeaser": "Subskrypcja odblokuje analizę AI, raporty wzorców i wskazówki. Wkrótce.",
+    "dailyNotifications": "Codzienne przypomnienia",
+    "dailyNotificationsHint": "Powiadomienie o 20:00 — chroni serię check-inów.",
+    "notificationsOn": "Przypomnienia włączone.",
+    "notificationsOff": "Przypomnienia wyłączone.",
+    "notificationsDenied": "Brak zgody na powiadomienia — włącz je w ustawieniach systemu.",
+    "planTitle": "Plan {{tier}}",
+    "manageSubscription": "Subskrypcja i płatność",
+    "plusTeaser": "Plus/Pro odblokowuje analizę AI i raporty wzorców. Płatność demo w aplikacji.",
     "about": "O MoodDic",
     "aboutTitle": "MoodDic",
     "aboutBody": "Zgamifikowany dziennik nastroju · v{{version}}"
+  },
+  "subscription": {
+    "title": "Subskrypcja",
+    "current": "Twój plan: {{tier}}",
+    "demoHint": "To mock płatności — wygląda jak checkout, ale nie obciąża prawdziwej karty. Karta kończąca się na 0000 zostanie odrzucona.",
+    "perMonth": "/mies.",
+    "paymentTitle": "Dane karty (demo)",
+    "cardName": "Imię i nazwisko na karcie",
+    "cardNumber": "Numer karty",
+    "cardNameRequired": "Podaj imię właściciela karty.",
+    "pay": "Zapłać i aktywuj",
+    "processing": "Przetwarzanie…",
+    "paySuccess": "Płatność przyjęta — plan aktywny!",
+    "payError": "Płatność nie przeszła.",
+    "cancel": "Anuluj subskrypcję",
+    "canceled": "Wracasz na Free."
   },
   "app": {
     "error": "Wystąpił błąd. Skontaktuj się z supportem.",

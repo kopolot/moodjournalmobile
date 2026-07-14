@@ -8,11 +8,12 @@ import Checkbox from '@/components/form/Checkbox';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import useAuthStyles from '@/styles/authStyles';
 import { useI18n } from '@/contexts/I18nContext';
-import { showAlert } from '@/utils/alert';
+import { useFeedback } from '@/contexts/FeedbackContext';
 
 export default function RegisterScreen() {
   const { register } = useAuth();
   const { t } = useI18n();
+  const { showToast } = useFeedback();
   const [isLoading, setIsLoading] = useState(false);
   const [firstname, setFirstname] = useState('');
   const [email, setEmail] = useState('');
@@ -27,17 +28,17 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     if (!firstname || !email || !password || !repeatPassword) {
-      showAlert(t('error'), t('register.errorFields'));
+      showToast({ tone: 'error', title: t('error'), message: t('register.errorFields') });
       return;
     }
 
     if (password !== repeatPassword) {
-      showAlert(t('error'), t('register.passwordMismatch'));
+      showToast({ tone: 'error', title: t('error'), message: t('register.passwordMismatch') });
       return;
     }
 
     if (!acceptPrivacyPolicy) {
-      showAlert(t('error'), t('register.privacyPolicyError'));
+      showToast({ tone: 'error', title: t('error'), message: t('register.privacyPolicyError') });
       return;
     }
 
@@ -45,14 +46,23 @@ export default function RegisterScreen() {
       setIsLoading(true);
       const response = await register(email, password, repeatPassword, firstname, acceptPrivacyPolicy);
       if (response.success) {
-        showAlert(t('success'), t(response.message?.[0] || 'register.success'));
+        showToast({
+          tone: 'success',
+          title: t('success'),
+          message: t(response.message?.[0] || 'register.success'),
+          durationMs: 4000,
+        });
         router.replace('/(auth)/login');
       } else {
-        showAlert(t('error'), t(response.message?.[0] || 'register.error'));
+        showToast({
+          tone: 'error',
+          title: t('error'),
+          message: t(response.message?.[0] || 'register.error'),
+        });
       }
     } catch (error) {
       console.error('Registration error:', error);
-      showAlert(t('error'), t('register.error'));
+      showToast({ tone: 'error', title: t('error'), message: t('register.error') });
     } finally {
       setIsLoading(false);
     }

@@ -1,7 +1,7 @@
 import { apiClient, ApiResponse } from './apiClient';
-import { API_CONFIG } from '@/config/appConfig';
+import { API_CONFIG, APP_LOGIC_CONFIG } from '@/config/appConfig';
 
-export type AspectKey = 'mood' | 'relationship' | 'activity' | 'environment';
+export type AspectKey = (typeof APP_LOGIC_CONFIG.specificMoods)[number];
 
 export interface AspectValue {
   score: number;
@@ -11,7 +11,7 @@ export interface AspectValue {
 export interface MoodEntry {
   id: string;
   overallMood: number;
-  aspects: Record<AspectKey, AspectValue>;
+  aspects: Record<string, AspectValue>;
   note?: string | null;
   xpEarned: number;
   createdAt: string;
@@ -39,7 +39,38 @@ export interface CreateMoodPayload {
   note?: string | null;
 }
 
+export interface CheckinHints {
+  windowDays: number;
+  deviationThreshold: number;
+  dropThreshold: number;
+  aspectAverages: Partial<Record<AspectKey, number>>;
+  overallAverage: number | null;
+  priorOverallAverage: number | null;
+  noticeableDrop: boolean;
+  noteMinLength: number;
+}
+
+export function isNoteRequiredForScore(
+  score: number,
+  average: number | null | undefined,
+  noticeableDrop: boolean,
+  deviationThreshold = 1
+): boolean {
+  if (noticeableDrop) return true;
+  // Cold start / no history yet — require a short note.
+  if (average == null) return true;
+  return Math.abs(score - average) >= deviationThreshold;
+}
+
 export class MoodService {
+  static async getCheckinHints(): Promise<CheckinHints | null> {
+    const response = await apiClient.get(API_CONFIG.ENDPOINTS.MOOD.CHECKIN_HINTS);
+    if (response.success && response.data) {
+      return response.data as CheckinHints;
+    }
+    return null;
+  }
+
   static async getStats(): Promise<MoodStats | null> {
     const response = await apiClient.get<ApiResponse & { data: MoodStats }>(
       API_CONFIG.ENDPOINTS.MOOD.STATS

@@ -90,7 +90,9 @@ export default function HomeScreen() {
 
         <View style={gameStyles.lockedBanner}>
           <Text style={gameStyles.panelTitle}>✨ {t('home.aiTitle')}</Text>
-          <Text style={gameStyles.panelText}>{t('home.aiTeaser')}</Text>
+          <Text style={gameStyles.panelText}>
+            {stats?.aiAnalysisUnlocked ? t('home.aiUnlocked') : t('home.aiTeaser')}
+          </Text>
         </View>
       </ScrollView>
     </View>

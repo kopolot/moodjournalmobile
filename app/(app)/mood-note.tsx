@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -25,6 +25,7 @@ import {
 import { Brand } from '@/styles/colors';
 import { gameFonts, gameStyles } from '@/styles/gameStyles';
 import { useFeedback } from '@/contexts/FeedbackContext';
+import { createIdempotencyKey } from '@/utils/idempotency';
 
 type AspectState = Record<AspectKey, { score: number; note: string }>;
 
@@ -51,6 +52,7 @@ export default function MoodNoteScreen() {
   });
   const [submitting, setSubmitting] = useState(false);
   const [earnedXp, setEarnedXp] = useState<number | null>(null);
+  const submitIdempotencyKey = useRef<string | null>(null);
 
   useEffect(() => {
     MoodService.getCheckinHints().then(setHints);
@@ -100,6 +102,9 @@ export default function MoodNoteScreen() {
   const submit = async () => {
     try {
       setSubmitting(true);
+      if (!submitIdempotencyKey.current) {
+        submitIdempotencyKey.current = createIdempotencyKey();
+      }
       const payload = {
         overallMood,
         note: overallNote.trim() || null,
@@ -114,12 +119,15 @@ export default function MoodNoteScreen() {
         ) as Record<AspectKey, { score: number; note: string | null }>,
       };
 
-      const result = await MoodService.create(payload);
+      const result = await MoodService.create(payload, {
+        idempotencyKey: submitIdempotencyKey.current,
+      });
       if (!result) {
         showToast({ tone: 'error', title: t('error'), message: t('mood-note.submitError') });
         return;
       }
 
+      submitIdempotencyKey.current = null;
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setEarnedXp(result.entry.xpEarned);
       setStep(totalSteps + 1);

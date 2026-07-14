@@ -1,5 +1,6 @@
 import { apiClient } from './apiClient';
 import { API_CONFIG } from '@/config/appConfig';
+import { createIdempotencyKey } from '@/utils/idempotency';
 
 export type PlanId = 'free' | 'plus' | 'pro';
 
@@ -44,8 +45,15 @@ export class SubscriptionService {
     };
   }
 
-  static async checkout(payload: CheckoutPayload) {
-    return apiClient.post(API_CONFIG.ENDPOINTS.SUBSCRIPTION.CHECKOUT, payload);
+  static async checkout(
+    payload: CheckoutPayload,
+    options?: { idempotencyKey?: string }
+  ) {
+    return apiClient.post(API_CONFIG.ENDPOINTS.SUBSCRIPTION.CHECKOUT, payload, {
+      headers: {
+        'Idempotency-Key': options?.idempotencyKey ?? createIdempotencyKey(),
+      },
+    });
   }
 
   static async cancel() {

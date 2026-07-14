@@ -1,5 +1,6 @@
 import { apiClient, ApiResponse } from './apiClient';
 import { API_CONFIG, APP_LOGIC_CONFIG } from '@/config/appConfig';
+import { createIdempotencyKey } from '@/utils/idempotency';
 
 export type AspectKey = (typeof APP_LOGIC_CONFIG.specificMoods)[number];
 
@@ -93,11 +94,16 @@ export class MoodService {
   }
 
   static async create(
-    payload: CreateMoodPayload
+    payload: CreateMoodPayload,
+    options?: { idempotencyKey?: string }
   ): Promise<{ entry: MoodEntry; stats: MoodStats } | null> {
     const response = await apiClient.post<
       ApiResponse & { data: { entry: MoodEntry; stats: MoodStats } }
-    >(API_CONFIG.ENDPOINTS.MOOD.CREATE, payload);
+    >(API_CONFIG.ENDPOINTS.MOOD.CREATE, payload, {
+      headers: {
+        'Idempotency-Key': options?.idempotencyKey ?? createIdempotencyKey(),
+      },
+    });
 
     if (response.success && response.data) {
       return response.data as { entry: MoodEntry; stats: MoodStats };

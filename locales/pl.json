@@ -234,7 +234,8 @@
   "app": {
     "error": "Wystąpił błąd. Skontaktuj się z supportem.",
     "offline": {
-      "title": "Jesteś offline"
+      "title": "Jesteś offline",
+      "banner": "Brak połączenia z internetem"
     }
   },
   "user": {

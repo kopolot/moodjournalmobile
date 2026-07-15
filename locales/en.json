@@ -234,7 +234,8 @@
   "app": {
     "error": "Something went wrong. Please contact support.",
     "offline": {
-      "title": "You are offline"
+      "title": "You are offline",
+      "banner": "No internet connection"
     }
   },
   "user": {

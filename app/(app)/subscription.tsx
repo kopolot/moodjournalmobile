@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ import {
 } from '@/services/subscriptionService';
 import { Brand } from '@/styles/colors';
 import { gameFonts, gameStyles } from '@/styles/gameStyles';
+import { createIdempotencyKey } from '@/utils/idempotency';
 
 export default function SubscriptionScreen() {
   const { t } = useI18n();
@@ -30,6 +31,7 @@ export default function SubscriptionScreen() {
   const [tier, setTier] = useState<PlanId>('free');
   const [selected, setSelected] = useState<'plus' | 'pro'>('plus');
   const [paying, setPaying] = useState(false);
+  const payIdempotencyKey = useRef<string | null>(null);
   const [cardNumber, setCardNumber] = useState('4242 4242 4242 4242');
   const [expiry, setExpiry] = useState('12/30');
   const [cvc, setCvc] = useState('123');
@@ -58,15 +60,21 @@ export default function SubscriptionScreen() {
     }
     try {
       setPaying(true);
+      if (!payIdempotencyKey.current) {
+        payIdempotencyKey.current = createIdempotencyKey();
+      }
       // Fake processing delay — feels like a real gateway
       await new Promise((r) => setTimeout(r, 1400));
-      const response = await SubscriptionService.checkout({
-        tier: selected,
-        cardNumber,
-        expiry,
-        cvc,
-        cardholderName: name.trim(),
-      });
+      const response = await SubscriptionService.checkout(
+        {
+          tier: selected,
+          cardNumber,
+          expiry,
+          cvc,
+          cardholderName: name.trim(),
+        },
+        { idempotencyKey: payIdempotencyKey.current }
+      );
       if (!response.success) {
         showToast({
           tone: 'error',
@@ -75,6 +83,7 @@ export default function SubscriptionScreen() {
         });
         return;
       }
+      payIdempotencyKey.current = null;
       await refreshUser?.();
       showToast({
         tone: 'success',

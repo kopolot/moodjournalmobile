@@ -22,8 +22,7 @@ export default function RegisterScreen() {
   const [acceptPrivacyPolicy, setAcceptPrivacyPolicy] = useState(false);
   const { forms, buttons } = useStyles();
   const styles = useAuthStyles();
-  const textColor = useThemeColor({}, 'text');
-  const placeholderColor = useThemeColor({}, 'text');
+  const placeholderColor = useThemeColor({}, 'muted');
   const linkColor = useThemeColor({}, 'link');
 
   const handleRegister = async () => {
@@ -75,10 +74,12 @@ export default function RegisterScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <StatusBar style="auto" />
+      <StatusBar style={styles.statusBar} />
 
       <View style={styles.logoContainer}>
-        <Text style={styles.appName}>MoodDic</Text>
+        <Text style={styles.appName}>
+          Mood<Text style={styles.appNameAccent}>Dic</Text>
+        </Text>
       </View>
 
       <View style={styles.formContainer}>
@@ -146,7 +147,7 @@ export default function RegisterScreen() {
         </TouchableOpacity>
 
         <View style={styles.bottomContainer}>
-          <Text style={{ color: textColor }}>{t('register.alreadyHaveAccount')} </Text>
+          <Text style={styles.loginText}>{t('register.alreadyHaveAccount')} </Text>
           <TouchableOpacity onPress={() => router.push('/(auth)/login')} disabled={isLoading}>
             <Text style={{ color: linkColor }}>
               {t('register.login')}

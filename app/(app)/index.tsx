@@ -6,13 +6,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { MoodService, MoodStats } from '@/services/moodService';
 import { gameStyles } from '@/styles/gameStyles';
+import { useGameStyles } from '@/hooks/useGameStyles';
 import PrimaryButton from '@/components/game/PrimaryButton';
 import XpBar from '@/components/game/XpBar';
 import StreakFlame from '@/components/game/StreakFlame';
+
 export default function HomeScreen() {
   const { user } = useAuth();
   const router = useRouter();
   const { t } = useI18n();
+  const { styles, statusBar } = useGameStyles();
   const [stats, setStats] = useState<MoodStats | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -36,17 +39,17 @@ export default function HomeScreen() {
   const loggedToday = stats?.loggedToday ?? false;
 
   return (
-    <View style={gameStyles.screen}>
-      <StatusBar style="dark" />
-      <View style={gameStyles.topBar}>
-        <Text style={gameStyles.brand}>
+    <View style={styles.screen}>
+      <StatusBar style={statusBar} />
+      <View style={styles.topBar}>
+        <Text style={styles.brand}>
           Mood<Text style={gameStyles.brandAccent}>Dic</Text>
         </Text>
         <StreakFlame streak={stats?.currentStreak ?? 0} compact />
       </View>
 
       <ScrollView
-        contentContainerStyle={gameStyles.scrollContent}
+        contentContainerStyle={styles.scrollContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
         <View style={gameStyles.heroPanel}>
@@ -63,34 +66,34 @@ export default function HomeScreen() {
           />
         </View>
 
-        <View style={gameStyles.panel}>
-          <Text style={gameStyles.panelTitle}>{t('home.progress')}</Text>
+        <View style={styles.panel}>
+          <Text style={styles.panelTitle}>{t('home.progress')}</Text>
           <XpBar
             level={stats?.level ?? 1}
             xpIntoLevel={stats?.xpIntoLevel ?? 0}
             xpPerLevel={stats?.xpPerLevel ?? 100}
           />
-          <Text style={[gameStyles.panelText, { marginTop: 10 }]}>
+          <Text style={[styles.panelText, { marginTop: 10 }]}>
             {t('home.totalXp', { xp: stats?.xpTotal ?? 0 })}
           </Text>
         </View>
 
-        <View style={gameStyles.panel}>
-          <Text style={gameStyles.panelTitle}>{t('home.weekPulse')}</Text>
-          <Text style={gameStyles.panelText}>
+        <View style={styles.panel}>
+          <Text style={styles.panelTitle}>{t('home.weekPulse')}</Text>
+          <Text style={styles.panelText}>
             {stats?.averageOverall7d != null
               ? t('home.average', { value: stats.averageOverall7d.toFixed(1) })
               : t('home.noAverage')}
           </Text>
-          <Text style={[gameStyles.panelText, { marginTop: 6 }]}>
+          <Text style={[styles.panelText, { marginTop: 6 }]}>
             {t('home.entries', { count: stats?.entryCount ?? 0 })} ·{' '}
             {t('home.bestStreak', { count: stats?.longestStreak ?? 0 })}
           </Text>
         </View>
 
-        <View style={gameStyles.lockedBanner}>
-          <Text style={gameStyles.panelTitle}>✨ {t('home.aiTitle')}</Text>
-          <Text style={gameStyles.panelText}>
+        <View style={styles.lockedBanner}>
+          <Text style={styles.panelTitle}>✨ {t('home.aiTitle')}</Text>
+          <Text style={styles.panelText}>
             {stats?.aiAnalysisUnlocked ? t('home.aiUnlocked') : t('home.aiTeaser')}
           </Text>
         </View>

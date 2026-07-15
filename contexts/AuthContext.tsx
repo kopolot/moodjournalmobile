@@ -1,14 +1,24 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { AuthService, User } from '@/services/authService';
-import NetInfo, { NetInfoState} from '@react-native-community/netinfo';
+import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
 import { APP_CONFIG } from '@/config/appConfig';
 import { ApiResponse } from '@/services/apiClient';
+import { useI18n } from '@/contexts/I18nContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { fromApiLanguage } from '@/utils/preferences';
+import { NotificationService } from '@/services/notificationService';
 
 interface AuthContextType {
   isLoggedIn: boolean;
   user: User | null;
   login: (email: string, password: string, remember_me: boolean) => Promise<ApiResponse>;
-  register: ( email: string, password: string, repeatPassword: string, firstname: string, acceptPrivacyPolicy: boolean) => Promise<ApiResponse>;
+  register: (
+    email: string,
+    password: string,
+    repeatPassword: string,
+    firstname: string,
+    acceptPrivacyPolicy: boolean
+  ) => Promise<ApiResponse>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   isConnected: boolean;
@@ -32,23 +42,40 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const { setLanguage } = useI18n();
+  const { hydrateDarkMode } = useTheme();
+
+  const applyUserPreferences = async (userData: User | null) => {
+    if (!userData?.preferences) return;
+    const prefs = userData.preferences;
+    if (prefs.language) {
+      await setLanguage(fromApiLanguage(prefs.language));
+    }
+    if (typeof prefs.darkMode === 'boolean') {
+      hydrateDarkMode(prefs.darkMode);
+    }
+    if (typeof prefs.dailyNotifications === 'boolean') {
+      await NotificationService.hydrateEnabled(prefs.dailyNotifications);
+    }
+  };
 
   const checkAuth = async () => {
-    
     try {
       const isAuthenticated = await AuthService.isAuthenticated();
       if (isAuthenticated) {
-        var userData;
-        try{
+        let userData: User | null = null;
+        try {
           userData = await AuthService.loadCurrentUser();
-        }catch(e){
+        } catch {
           userData = await AuthService.getCurrentUser();
         }
-        if( !!userData){
+        if (userData) {
           setUser(userData);
           setIsLoggedIn(true);
-        }else
+          await applyUserPreferences(userData);
+        } else {
           throw new Error('User authenticated but no data found');
+        }
       } else {
         setUser(null);
         setIsLoggedIn(false);
@@ -57,25 +84,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error('Auth check error:', error);
       setUser(null);
       setIsLoggedIn(false);
-    } finally {
-      
     }
   };
 
   useEffect(() => {
-    
-    const changeConnectionStatus = ( state: NetInfoState) => {
-      if( __DEV__ && APP_CONFIG.DEV.FORCE_OFFLINE){
+    const changeConnectionStatus = (state: NetInfoState) => {
+      if (__DEV__ && APP_CONFIG.DEV.FORCE_OFFLINE) {
         setIsConnected(false);
-      }else
-        setIsConnected( state.isConnected && state.isInternetReachable || false);
-    }
+      } else {
+        setIsConnected(!!(state.isConnected && state.isInternetReachable));
+      }
+    };
 
-    // initial check
-    NetInfo.fetch().then( changeConnectionStatus);
-
-    const unsubscribe = NetInfo.addEventListener( changeConnectionStatus);
-
+    NetInfo.fetch().then(changeConnectionStatus);
+    const unsubscribe = NetInfo.addEventListener(changeConnectionStatus);
     checkAuth();
 
     return () => {
@@ -83,51 +105,54 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, []);
 
-  const login = async (email: string, password: string, remember_me: boolean): Promise<ApiResponse> => {
-    
+  const login = async (
+    email: string,
+    password: string,
+    remember_me: boolean
+  ): Promise<ApiResponse> => {
     try {
       const response = await AuthService.login({ email, password, remember_me });
       if (response.success) {
         const userData = await AuthService.loadCurrentUser();
         setUser(userData);
-        setIsLoggedIn(true);;
+        setIsLoggedIn(true);
+        await applyUserPreferences(userData);
       }
       return response;
     } catch (error) {
       console.error('Login error:', error);
-      throw error
+      throw error;
     }
   };
 
-  const register = async (email: string, password: string, repeatPassword: string, firstname: string, acceptPrivacyPolicy: boolean): Promise<ApiResponse> => {
-
+  const register = async (
+    email: string,
+    password: string,
+    repeatPassword: string,
+    firstname: string,
+    acceptPrivacyPolicy: boolean
+  ): Promise<ApiResponse> => {
     try {
-      const response = await AuthService.register({
+      return await AuthService.register({
         firstname,
         email,
         password,
         repeatPassword,
-        acceptPrivacyPolicy
-       });
-      return response;
+        acceptPrivacyPolicy,
+      });
     } catch (error) {
       console.error('Register error:', error);
       return { success: false, error: 'app.error' } as ApiResponse;
-    } finally {
-      
     }
   };
 
   const logout = async () => {
-    
     try {
       await AuthService.logout();
       setUser(null);
       setIsLoggedIn(false);
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
-      
     }
   };
 
@@ -137,6 +162,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (userData) {
         setUser(userData);
         setIsLoggedIn(true);
+        await applyUserPreferences(userData);
       }
     } catch (error) {
       console.error('Refresh user error:', error);
@@ -152,7 +178,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         register,
         logout,
         refreshUser,
-        isConnected
+        isConnected,
       }}
     >
       {children}

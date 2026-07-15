@@ -4,6 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { MoodScale } from '@/styles/colors';
 import { gameFonts } from '@/styles/gameStyles';
 import { useI18n } from '@/contexts/I18nContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 type Props = {
   mood: number;
@@ -13,6 +14,8 @@ type Props = {
 
 export default function MoodSelector({ mood, setMood, showLabels = true }: Props) {
   const { t } = useI18n();
+  const { colors, scheme } = useTheme();
+  const idleBg = scheme === 'dark' ? colors.inputBackground : '#F3F3F3';
 
   return (
     <View style={styles.wrap}>
@@ -31,8 +34,8 @@ export default function MoodSelector({ mood, setMood, showLabels = true }: Props
               style={[
                 styles.btn,
                 {
-                  backgroundColor: selected ? item.color : '#F3F3F3',
-                  borderColor: selected ? item.color : '#E5E5E5',
+                  backgroundColor: selected ? item.color : idleBg,
+                  borderColor: selected ? item.color : colors.border,
                   transform: [{ scale: selected ? 1.08 : 1 }],
                 },
               ]}

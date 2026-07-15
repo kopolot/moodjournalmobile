@@ -24,6 +24,7 @@ import {
 } from '@/services/moodService';
 import { Brand } from '@/styles/colors';
 import { gameFonts, gameStyles } from '@/styles/gameStyles';
+import { useGameStyles } from '@/hooks/useGameStyles';
 import { useFeedback } from '@/contexts/FeedbackContext';
 import { createIdempotencyKey } from '@/utils/idempotency';
 
@@ -37,6 +38,7 @@ export default function MoodNoteScreen() {
   const totalSteps = 2 + aspects.length; // overall + aspects + summary
   const { t } = useI18n();
   const { showToast } = useFeedback();
+  const { styles: game, colors, statusBar, scheme } = useGameStyles();
   const router = useRouter();
   const params = useLocalSearchParams<{ id?: string }>();
   const editId = typeof params.id === 'string' ? params.id : null;
@@ -57,6 +59,143 @@ export default function MoodNoteScreen() {
   const [loadingEntry, setLoadingEntry] = useState(!!editId);
   const [earnedXp, setEarnedXp] = useState<number | null>(null);
   const submitIdempotencyKey = useRef<string | null>(null);
+
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        stepCounter: {
+          fontFamily: gameFonts.extra,
+          fontSize: 16,
+          color: Brand.green,
+        },
+        progressTrack: {
+          height: 10,
+          marginHorizontal: 20,
+          marginBottom: 8,
+          backgroundColor: colors.border,
+          borderRadius: 999,
+          overflow: 'hidden',
+          borderWidth: 2,
+          borderColor: colors.border,
+        },
+        progressFill: {
+          height: '100%',
+          backgroundColor: Brand.green,
+        },
+        stepTitle: {
+          fontFamily: gameFonts.extra,
+          fontSize: 24,
+          color: colors.text,
+          marginBottom: 6,
+        },
+        stepHint: {
+          fontFamily: gameFonts.regular,
+          fontSize: 15,
+          color: colors.muted,
+          marginBottom: 8,
+          lineHeight: 21,
+        },
+        footer: {
+          flexDirection: 'row',
+          gap: 12,
+          paddingHorizontal: 20,
+          paddingBottom: 28,
+          paddingTop: 8,
+          backgroundColor: colors.background,
+        },
+        noteLabel: {
+          fontFamily: gameFonts.bold,
+          fontSize: 14,
+          color: colors.text,
+          marginTop: 8,
+          marginBottom: 6,
+        },
+        whyRequired: {
+          fontFamily: gameFonts.regular,
+          fontSize: 13,
+          color: Brand.streak,
+          marginBottom: 6,
+          lineHeight: 18,
+        },
+        dropBanner: {
+          fontFamily: gameFonts.bold,
+          fontSize: 13,
+          color: Brand.red,
+          marginBottom: 8,
+          lineHeight: 18,
+        },
+        avg: {
+          fontFamily: gameFonts.bold,
+          fontSize: 13,
+          color: Brand.blue,
+          marginBottom: 4,
+        },
+        input: {
+          minHeight: 100,
+          borderWidth: 2,
+          borderColor: colors.border,
+          borderRadius: 16,
+          padding: 14,
+          fontFamily: gameFonts.regular,
+          fontSize: 16,
+          color: colors.text,
+          backgroundColor: colors.inputBackground,
+          textAlignVertical: 'top',
+        },
+        counter: {
+          marginTop: 6,
+          fontFamily: gameFonts.semi,
+          fontSize: 12,
+          color: colors.muted,
+        },
+        counterWarn: {
+          color: Brand.streak,
+        },
+        summaryList: {
+          backgroundColor: scheme === 'dark' ? colors.surfaceStrong : Brand.greenSoft,
+          borderRadius: 14,
+          padding: 14,
+          gap: 10,
+        },
+        summaryItem: {
+          gap: 2,
+        },
+        summaryLine: {
+          fontFamily: gameFonts.bold,
+          fontSize: 15,
+          color: colors.text,
+        },
+        summaryNote: {
+          fontFamily: gameFonts.regular,
+          fontSize: 13,
+          color: colors.muted,
+          lineHeight: 18,
+        },
+        success: { alignItems: 'center', paddingVertical: 24 },
+        successEmoji: { fontSize: 64, marginBottom: 8 },
+        successTitle: {
+          fontFamily: gameFonts.extra,
+          fontSize: 26,
+          color: colors.text,
+          marginBottom: 8,
+        },
+        successXp: {
+          fontFamily: gameFonts.extra,
+          fontSize: 32,
+          color: Brand.gold,
+          marginBottom: 8,
+        },
+        successBody: {
+          fontFamily: gameFonts.regular,
+          fontSize: 15,
+          color: colors.muted,
+          textAlign: 'center',
+          marginBottom: 20,
+          lineHeight: 22,
+        },
+      }),
+    [colors, scheme]
+  );
 
   useEffect(() => {
     MoodService.getCheckinHints().then(setHints);
@@ -190,8 +329,8 @@ export default function MoodNoteScreen() {
 
   if (loadingEntry) {
     return (
-      <View style={[gameStyles.screen, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text style={gameStyles.panelText}>{t('mood-note.loading')}</Text>
+      <View style={[game.screen, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={game.panelText}>{t('mood-note.loading')}</Text>
       </View>
     );
   }
@@ -239,7 +378,7 @@ export default function MoodNoteScreen() {
           <TextInput
             style={styles.input}
             placeholder={t('mood-note.overallNotePlaceholder')}
-            placeholderTextColor="#AFAFAF"
+            placeholderTextColor={colors.muted}
             value={overallNote}
             onChangeText={setOverallNote}
             multiline
@@ -311,12 +450,12 @@ export default function MoodNoteScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={gameStyles.screen}
+      style={game.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <StatusBar style="dark" />
-      <View style={gameStyles.topBar}>
-        <Text style={gameStyles.brand}>
+      <StatusBar style={statusBar} />
+      <View style={game.topBar}>
+        <Text style={game.brand}>
           {isEdit ? t('mood-note.editTitle') : t('mood-note.title')}
         </Text>
         {step <= totalSteps ? (
@@ -333,10 +472,10 @@ export default function MoodNoteScreen() {
       ) : null}
 
       <ScrollView
-        contentContainerStyle={gameStyles.scrollContent}
+        contentContainerStyle={game.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={gameStyles.panel}>{renderBody()}</View>
+        <View style={game.panel}>{renderBody()}</View>
       </ScrollView>
 
       {step <= totalSteps ? (
@@ -372,136 +511,3 @@ export default function MoodNoteScreen() {
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  stepCounter: {
-    fontFamily: gameFonts.extra,
-    fontSize: 16,
-    color: Brand.greenDark,
-  },
-  progressTrack: {
-    height: 10,
-    marginHorizontal: 20,
-    marginBottom: 8,
-    backgroundColor: '#E5E5E5',
-    borderRadius: 999,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: '#D6D6D6',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: Brand.green,
-  },
-  stepTitle: {
-    fontFamily: gameFonts.extra,
-    fontSize: 24,
-    color: Brand.ink,
-    marginBottom: 6,
-  },
-  stepHint: {
-    fontFamily: gameFonts.regular,
-    fontSize: 15,
-    color: '#777',
-    marginBottom: 8,
-    lineHeight: 21,
-  },
-  footer: {
-    flexDirection: 'row',
-    gap: 12,
-    paddingHorizontal: 20,
-    paddingBottom: 28,
-    paddingTop: 8,
-    backgroundColor: Brand.mist,
-  },
-  noteLabel: {
-    fontFamily: gameFonts.bold,
-    fontSize: 14,
-    color: Brand.ink,
-    marginTop: 8,
-    marginBottom: 6,
-  },
-  whyRequired: {
-    fontFamily: gameFonts.regular,
-    fontSize: 13,
-    color: Brand.streak,
-    marginBottom: 6,
-    lineHeight: 18,
-  },
-  dropBanner: {
-    fontFamily: gameFonts.bold,
-    fontSize: 13,
-    color: Brand.red,
-    marginBottom: 8,
-    lineHeight: 18,
-  },
-  avg: {
-    fontFamily: gameFonts.bold,
-    fontSize: 13,
-    color: Brand.blue,
-    marginBottom: 4,
-  },
-  input: {
-    minHeight: 100,
-    borderWidth: 2,
-    borderColor: '#E5E5E5',
-    borderRadius: 16,
-    padding: 14,
-    fontFamily: gameFonts.regular,
-    fontSize: 16,
-    color: Brand.ink,
-    backgroundColor: '#fff',
-    textAlignVertical: 'top',
-  },
-  counter: {
-    marginTop: 6,
-    fontFamily: gameFonts.semi,
-    fontSize: 12,
-    color: '#888',
-  },
-  counterWarn: {
-    color: Brand.streak,
-  },
-  summaryList: {
-    backgroundColor: Brand.greenSoft,
-    borderRadius: 14,
-    padding: 14,
-    gap: 10,
-  },
-  summaryItem: {
-    gap: 2,
-  },
-  summaryLine: {
-    fontFamily: gameFonts.bold,
-    fontSize: 15,
-    color: Brand.ink,
-  },
-  summaryNote: {
-    fontFamily: gameFonts.regular,
-    fontSize: 13,
-    color: '#555',
-    lineHeight: 18,
-  },
-  success: { alignItems: 'center', paddingVertical: 24 },
-  successEmoji: { fontSize: 64, marginBottom: 8 },
-  successTitle: {
-    fontFamily: gameFonts.extra,
-    fontSize: 26,
-    color: Brand.ink,
-    marginBottom: 8,
-  },
-  successXp: {
-    fontFamily: gameFonts.extra,
-    fontSize: 32,
-    color: Brand.gold,
-    marginBottom: 8,
-  },
-  successBody: {
-    fontFamily: gameFonts.regular,
-    fontSize: 15,
-    color: '#777',
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 22,
-  },
-});

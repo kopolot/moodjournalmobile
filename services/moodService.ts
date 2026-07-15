@@ -120,6 +120,18 @@ export class MoodService {
     return null;
   }
 
+  static async update(
+    id: string,
+    payload: Partial<CreateMoodPayload>
+  ): Promise<MoodEntry | null> {
+    const response = await apiClient.patch(API_CONFIG.ENDPOINTS.MOOD.DETAIL(id), payload);
+    const data = response.data as { entry?: MoodEntry } | undefined;
+    if (response.success && data?.entry) {
+      return data.entry;
+    }
+    return null;
+  }
+
   static async remove(id: string): Promise<boolean> {
     const response = await apiClient.delete(API_CONFIG.ENDPOINTS.MOOD.DETAIL(id));
     return !!response.success;

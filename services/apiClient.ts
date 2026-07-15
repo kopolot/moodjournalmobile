@@ -38,7 +38,7 @@ class ApiClient {
   private async fetchWithAuth<T = any>(
     endpoint: string,
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
-    data: Array<any>,
+    data: any,
     options: ApiRequestOptions = {}
   ): Promise<ApiResponse<T>> {
     try {
@@ -46,12 +46,12 @@ class ApiClient {
       // Default only applies when `options` is omitted — merge so partial
       // `{ headers }` still keeps auth on (mood create / checkout).
       const requiresAuth = options.requiresAuth !== false;
-      
+
       // Przygotowanie nagłówków
       let headers: Record<string, string> = {
         ...options.headers,
       };
-      
+
       // Dodanie tokenu autoryzacji, jeśli wymagane
       if (requiresAuth) {
         const token = await AsyncStorage.getItem(STORAGE_CONFIG.USER_TOKEN_KEY);
@@ -67,7 +67,7 @@ class ApiClient {
           };
         }
       }
-      
+
       // Konfiguracja żądania axios
       const axiosConfig: AxiosRequestConfig = {
         method,
@@ -75,16 +75,16 @@ class ApiClient {
         headers,
         timeout: options.timeout || API_CONFIG.TIMEOUT
       };
-      
+
       // Dodanie danych do żądania, jeśli zostały przekazane
       if (data && method !== 'GET') {
         axiosConfig.data = data;
       }
-      
+
       try {
         // Wykonanie żądania z axios
         const response: AxiosResponse = await this.axiosInstance(axiosConfig);
-        
+
         // Przetwarzanie odpowiedzi
         return {
           success: response.data.success,
@@ -95,7 +95,7 @@ class ApiClient {
       } catch (axiosError) {
         // Obsługa błędów axios
         const error = axiosError as AxiosError;
-        
+
         if (error.response) {
           // Serwer zwrócił odpowiedź z kodem błędu
           const responseData = error.response.data as any;
@@ -124,7 +124,7 @@ class ApiClient {
           };
         }
       }
-      
+
     } catch (error) {
       console.error('API request failed:', error);
       return {
@@ -135,7 +135,7 @@ class ApiClient {
       };
     }
   }
-  
+
   /**
    * Wykonuje żądanie GET
    */
@@ -145,7 +145,7 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     return this.fetchWithAuth<T>(endpoint, 'GET', [], options);
   }
-  
+
   /**
    * Wykonuje żądanie POST
    */
@@ -156,7 +156,7 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     return this.fetchWithAuth<T>(endpoint, 'POST', data, options);
   }
-  
+
   /**
    * Wykonuje żądanie PUT
    */
@@ -167,7 +167,7 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     return this.fetchWithAuth<T>(endpoint, 'PUT', data, options);
   }
-  
+
   /**
    * Wykonuje żądanie PATCH
    */
@@ -178,7 +178,7 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     return this.fetchWithAuth<T>(endpoint, 'PATCH', data, options);
   }
-  
+
   /**
    * Wykonuje żądanie DELETE
    */

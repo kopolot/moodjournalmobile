@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useI18n } from '@/contexts/I18nContext';
 import { APP_LOGIC_CONFIG } from '@/config/appConfig';
@@ -38,6 +38,9 @@ export default function MoodNoteScreen() {
   const { t } = useI18n();
   const { showToast } = useFeedback();
   const router = useRouter();
+  const params = useLocalSearchParams<{ id?: string }>();
+  const editId = typeof params.id === 'string' ? params.id : null;
+  const isEdit = !!editId;
 
   const [hints, setHints] = useState<CheckinHints | null>(null);
   const [step, setStep] = useState(1);
@@ -51,12 +54,42 @@ export default function MoodNoteScreen() {
     return init;
   });
   const [submitting, setSubmitting] = useState(false);
+  const [loadingEntry, setLoadingEntry] = useState(!!editId);
   const [earnedXp, setEarnedXp] = useState<number | null>(null);
   const submitIdempotencyKey = useRef<string | null>(null);
 
   useEffect(() => {
     MoodService.getCheckinHints().then(setHints);
   }, []);
+
+  useEffect(() => {
+    if (!editId) return;
+    let cancelled = false;
+    setLoadingEntry(true);
+    MoodService.get(editId).then((entry) => {
+      if (cancelled || !entry) {
+        if (!cancelled && !entry) {
+          showToast({ tone: 'error', message: t('mood-note.loadError') });
+          router.replace('/(app)/history');
+        }
+        return;
+      }
+      setOverallMood(entry.overallMood);
+      setOverallNote(entry.note ?? '');
+      const next = {} as AspectState;
+      aspects.forEach((key) => {
+        next[key] = {
+          score: entry.aspects?.[key]?.score ?? 0,
+          note: entry.aspects?.[key]?.note ?? '',
+        };
+      });
+      setSpecific(next);
+      setLoadingEntry(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [editId]);
 
   const progress = useMemo(() => step / totalSteps, [step, totalSteps]);
   const deviation = hints?.deviationThreshold ?? 1;
@@ -119,6 +152,18 @@ export default function MoodNoteScreen() {
         ) as Record<AspectKey, { score: number; note: string | null }>,
       };
 
+      if (isEdit && editId) {
+        const entry = await MoodService.update(editId, payload);
+        if (!entry) {
+          showToast({ tone: 'error', title: t('error'), message: t('mood-note.submitError') });
+          return;
+        }
+        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        setEarnedXp(entry.xpEarned);
+        setStep(totalSteps + 1);
+        return;
+      }
+
       const result = await MoodService.create(payload, {
         idempotencyKey: submitIdempotencyKey.current,
       });
@@ -140,18 +185,33 @@ export default function MoodNoteScreen() {
   };
 
   const resetAndHome = () => {
-    router.replace('/(app)');
+    router.replace(isEdit ? '/(app)/history' : '/(app)');
   };
+
+  if (loadingEntry) {
+    return (
+      <View style={[gameStyles.screen, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text style={gameStyles.panelText}>{t('mood-note.loading')}</Text>
+      </View>
+    );
+  }
 
   const renderBody = () => {
     if (step === totalSteps + 1) {
       return (
         <View style={styles.success}>
-          <Text style={styles.successEmoji}>🎉</Text>
-          <Text style={styles.successTitle}>{t('mood-note.successTitle')}</Text>
-          <Text style={styles.successXp}>+{earnedXp ?? 0} XP</Text>
-          <Text style={styles.successBody}>{t('mood-note.successBody')}</Text>
-          <PrimaryButton title={t('mood-note.backHome')} onPress={resetAndHome} />
+          <Text style={styles.successEmoji}>{isEdit ? '✏️' : '🎉'}</Text>
+          <Text style={styles.successTitle}>
+            {isEdit ? t('mood-note.editSuccessTitle') : t('mood-note.successTitle')}
+          </Text>
+          {!isEdit ? <Text style={styles.successXp}>+{earnedXp ?? 0} XP</Text> : null}
+          <Text style={styles.successBody}>
+            {isEdit ? t('mood-note.editSuccessBody') : t('mood-note.successBody')}
+          </Text>
+          <PrimaryButton
+            title={isEdit ? t('mood-note.backHistory') : t('mood-note.backHome')}
+            onPress={resetAndHome}
+          />
         </View>
       );
     }
@@ -256,7 +316,9 @@ export default function MoodNoteScreen() {
     >
       <StatusBar style="dark" />
       <View style={gameStyles.topBar}>
-        <Text style={gameStyles.brand}>{t('mood-note.title')}</Text>
+        <Text style={gameStyles.brand}>
+          {isEdit ? t('mood-note.editTitle') : t('mood-note.title')}
+        </Text>
         {step <= totalSteps ? (
           <Text style={styles.stepCounter}>
             {step}/{totalSteps}
@@ -298,7 +360,7 @@ export default function MoodNoteScreen() {
             />
           ) : (
             <PrimaryButton
-              title={t('mood-note.submit')}
+              title={isEdit ? t('mood-note.saveEdit') : t('mood-note.submit')}
               onPress={submit}
               loading={submitting}
               disabled={!canNext()}

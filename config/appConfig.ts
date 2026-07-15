@@ -120,13 +120,13 @@ export const API_CONFIG = {
       REGISTER: '/user/register',
       LOGOUT: '/auth/logout',
       REFRESH_TOKEN: '/auth/refresh-token',
-      FORGOT_PASSWORD: '/auth/forgot-password',
-      RESET_PASSWORD: 'user/resetpassword',
+      FORGOT_PASSWORD: '/user/forgotpassword',
+      RESET_PASSWORD: '/user/resetpassword',
     },
     USER: {
       PROFILE: '/user/get',
       UPDATE_PROFILE: '/user/edit',
-      CHANGE_PASSWORD: '/user/resetpassword',
+      CHANGE_PASSWORD: '/user/changepassword',
     },
     MOOD: {
       LIST: '/mood',

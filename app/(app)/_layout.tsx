@@ -14,6 +14,7 @@ import { gameFonts } from '@/styles/gameStyles';
 export default function AppLayout() {
   const { isLoggedIn, isConnected } = useAuth();
   const colorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
+  const theme = Colors[colorScheme];
   const { t } = useI18n();
 
   if (!isLoggedIn) {
@@ -21,12 +22,12 @@ export default function AppLayout() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
       {!isConnected && <OfflineBar />}
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme].tint,
-          tabBarInactiveTintColor: Colors[colorScheme].tabIconDefault,
+          tabBarActiveTintColor: theme.tint,
+          tabBarInactiveTintColor: theme.tabIconDefault,
           headerShown: false,
           tabBarButton: HapticTab,
           tabBarBackground: TabBarBackground,
@@ -38,11 +39,13 @@ export default function AppLayout() {
             ios: {
               position: 'absolute',
               borderTopWidth: 2,
-              borderTopColor: '#E5E5E5',
+              borderTopColor: theme.border,
+              backgroundColor: theme.card,
             },
             default: {
               borderTopWidth: 2,
-              borderTopColor: '#E5E5E5',
+              borderTopColor: theme.border,
+              backgroundColor: theme.card,
               height: 64,
               paddingBottom: 8,
               paddingTop: 6,
@@ -87,6 +90,12 @@ export default function AppLayout() {
         />
         <Tabs.Screen
           name="subscription"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
+          name="change-password"
           options={{
             href: null,
           }}

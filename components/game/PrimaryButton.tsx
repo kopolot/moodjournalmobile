@@ -9,6 +9,7 @@ import {
 import * as Haptics from 'expo-haptics';
 import { gameStyles } from '@/styles/gameStyles';
 import { Brand } from '@/styles/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 
 type Props = {
   title: string;
@@ -27,19 +28,40 @@ export default function PrimaryButton({
   variant = 'primary',
   style,
 }: Props) {
+  const { colors, scheme } = useTheme();
   const isDisabled = disabled || loading;
+
   const base =
     variant === 'secondary'
-      ? gameStyles.secondaryBtn
+      ? [
+          gameStyles.secondaryBtn,
+          {
+            backgroundColor: colors.card,
+            borderColor: colors.border,
+          },
+        ]
       : variant === 'light'
-        ? [gameStyles.primaryBtn, { backgroundColor: '#fff', borderBottomColor: '#D0D0D0' }]
+        ? [
+            gameStyles.primaryBtn,
+            {
+              backgroundColor: scheme === 'dark' ? colors.card : '#fff',
+              borderBottomColor: scheme === 'dark' ? colors.border : '#D0D0D0',
+            },
+          ]
         : gameStyles.primaryBtn;
+
   const textStyle =
     variant === 'secondary'
-      ? gameStyles.secondaryBtnText
+      ? [gameStyles.secondaryBtnText, { color: colors.text }]
       : variant === 'light'
-        ? [gameStyles.primaryBtnText, { color: Brand.greenDark }]
+        ? [
+            gameStyles.primaryBtnText,
+            { color: scheme === 'dark' ? Brand.green : Brand.greenDark },
+          ]
         : gameStyles.primaryBtnText;
+
+  const spinnerColor =
+    variant === 'primary' ? colors.onPrimary : scheme === 'dark' ? Brand.green : Brand.ink;
 
   return (
     <Pressable
@@ -57,7 +79,7 @@ export default function PrimaryButton({
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? '#fff' : Brand.ink} />
+        <ActivityIndicator color={spinnerColor} />
       ) : (
         <Text style={textStyle}>{title}</Text>
       )}

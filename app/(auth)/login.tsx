@@ -15,7 +15,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { forms, buttons } = useStyles();
-  const textColor = useThemeColor({}, 'text');
+  const mutedColor = useThemeColor({}, 'muted');
   const linkColor = useThemeColor({}, 'link');
   const styles = useAuthStyles();
   const { t } = useI18n();
@@ -50,7 +50,7 @@ export default function LoginScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <StatusBar style="auto" />
+      <StatusBar style={styles.statusBar} />
 
       <View style={styles.logoContainer}>
         <Image
@@ -58,7 +58,9 @@ export default function LoginScreen() {
           style={styles.logo}
           resizeMode="contain"
         />
-        <Text style={styles.appName}>MoodDic</Text>
+        <Text style={styles.appName}>
+          Mood<Text style={styles.appNameAccent}>Dic</Text>
+        </Text>
       </View>
 
       <View style={styles.formContainer}>
@@ -73,7 +75,7 @@ export default function LoginScreen() {
           keyboardType="email-address"
           autoCapitalize="none"
           editable={!isLoading}
-          placeholderTextColor={textColor}
+          placeholderTextColor={mutedColor}
         />
 
         <TextInput
@@ -83,7 +85,7 @@ export default function LoginScreen() {
           onChangeText={setPassword}
           secureTextEntry
           editable={!isLoading}
-          placeholderTextColor={textColor}
+          placeholderTextColor={mutedColor}
         />
 
         <TouchableOpacity
@@ -98,8 +100,16 @@ export default function LoginScreen() {
           )}
         </TouchableOpacity>
 
+        <TouchableOpacity
+          onPress={() => router.push('/(auth)/forgot-password')}
+          disabled={isLoading}
+          style={{ marginTop: 14, alignSelf: 'center' }}
+        >
+          <Text style={{ color: linkColor }}>{t('login.forgotPassword')}</Text>
+        </TouchableOpacity>
+
         <View style={styles.bottomContainer}>
-          <Text style={{ color: textColor }}>{t('login.noAccount')} </Text>
+          <Text style={styles.loginText}>{t('login.noAccount')} </Text>
           <TouchableOpacity onPress={() => router.back()} disabled={isLoading}>
             <Text style={{ color: linkColor }}>
               {t('login.register')}

@@ -15,10 +15,12 @@ import { MoodScale, Brand } from '@/styles/colors';
 import { gameFonts, gameStyles } from '@/styles/gameStyles';
 import PrimaryButton from '@/components/game/PrimaryButton';
 import { useFeedback } from '@/contexts/FeedbackContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function HistoryScreen() {
   const { t, language } = useI18n();
   const { showToast, showConfirm } = useFeedback();
+  const { colors, scheme } = useTheme();
   const router = useRouter();
   const [items, setItems] = useState<MoodEntry[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -73,10 +75,10 @@ export default function HistoryScreen() {
   };
 
   return (
-    <View style={gameStyles.screen}>
-      <StatusBar style="dark" />
-      <View style={gameStyles.topBar}>
-        <Text style={gameStyles.brand}>{t('history.title')}</Text>
+    <View style={[gameStyles.screen, { backgroundColor: colors.background }]}>
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      <View style={[gameStyles.topBar, { backgroundColor: colors.background }]}>
+        <Text style={[gameStyles.brand, { color: colors.text }]}>{t('history.title')}</Text>
       </View>
 
       <FlatList
@@ -102,7 +104,10 @@ export default function HistoryScreen() {
           const scale = MoodScale[Math.max(0, Math.min(5, item.overallMood - 1))];
           return (
             <TouchableOpacity
-              style={styles.card}
+              style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
+              onPress={() =>
+                router.push({ pathname: '/(app)/mood-note', params: { id: item.id } })
+              }
               onLongPress={() => onDelete(item)}
               delayLongPress={350}
             >
@@ -110,12 +115,12 @@ export default function HistoryScreen() {
                 <Text style={styles.badgeEmoji}>{scale.emoji}</Text>
               </View>
               <View style={styles.body}>
-                <Text style={styles.title}>
+                <Text style={[styles.title, { color: colors.text }]}>
                   {t(scale.labelKey)} · {item.overallMood}/6
                 </Text>
-                <Text style={styles.meta}>{formatDate(item.createdAt)}</Text>
+                <Text style={[styles.meta, { color: colors.muted }]}>{formatDate(item.createdAt)}</Text>
                 {item.note ? (
-                  <Text style={styles.note} numberOfLines={2}>
+                  <Text style={[styles.note, { color: colors.muted }]} numberOfLines={2}>
                     {item.note}
                   </Text>
                 ) : null}

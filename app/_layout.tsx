@@ -5,7 +5,7 @@ import {
   Nunito_700Bold,
   Nunito_800ExtraBold,
 } from '@expo-google-fonts/nunito';
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router/react-navigation';
+import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from 'expo-router/react-navigation';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -15,6 +15,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { I18nProvider } from '@/contexts/I18nContext';
 import { FeedbackProvider } from '@/contexts/FeedbackContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { Brand } from '@/styles/colors';
 import { AlertToastBridge } from '@/components/ui/AlertToastBridge';
 import { NotificationService } from '@/services/notificationService';
@@ -46,25 +47,29 @@ export default function RootLayout() {
     );
   }
 
-  return <RootLayoutNav />;
+  return (
+    <ThemeProvider>
+      <I18nProvider>
+        <FeedbackProvider>
+          <AlertToastBridge />
+          <AuthProvider>
+            <RootLayoutNav />
+          </AuthProvider>
+        </FeedbackProvider>
+      </I18nProvider>
+    </ThemeProvider>
+  );
 }
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <I18nProvider>
-        <FeedbackProvider>
-          <AlertToastBridge />
-          <AuthProvider>
-            <Stack>
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen name="(app)" options={{ headerShown: false }} />
-            </Stack>
-          </AuthProvider>
-        </FeedbackProvider>
-      </I18nProvider>
-    </ThemeProvider>
+    <NavThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <Stack>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(app)" options={{ headerShown: false }} />
+      </Stack>
+    </NavThemeProvider>
   );
 }

@@ -12,20 +12,24 @@ import { StatusBar } from 'expo-status-bar';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { apiClient } from '@/services/apiClient';
 import { API_CONFIG, APP_CONFIG } from '@/config/appConfig';
 import { MoodService, MoodStats } from '@/services/moodService';
 import { NotificationService } from '@/services/notificationService';
+import { PreferencesService } from '@/services/preferencesService';
 import PrimaryButton from '@/components/game/PrimaryButton';
 import XpBar from '@/components/game/XpBar';
 import StreakFlame from '@/components/game/StreakFlame';
 import { gameFonts, gameStyles } from '@/styles/gameStyles';
 import { Brand } from '@/styles/colors';
 import { useFeedback } from '@/contexts/FeedbackContext';
+import { LANGUAGE_OPTIONS, AppLanguage } from '@/utils/preferences';
 
 export default function ProfileScreen() {
   const { user, logout, refreshUser } = useAuth();
   const { t, language, setLanguage } = useI18n();
+  const { darkMode, setDarkMode, colors, scheme } = useTheme();
   const { showToast, showConfirm } = useFeedback();
   const router = useRouter();
   const [stats, setStats] = useState<MoodStats | null>(null);
@@ -39,7 +43,13 @@ export default function ProfileScreen() {
       setFirstname(user?.firstname ?? '');
       MoodService.getStats().then(setStats);
       NotificationService.isEnabled().then(setDailyNotifications);
-    }, [user?.firstname])
+      if (typeof user?.preferences?.darkMode === 'boolean') {
+        // keep local ThemeContext; already hydrated on login
+      }
+      if (typeof user?.preferences?.dailyNotifications === 'boolean') {
+        setDailyNotifications(user.preferences.dailyNotifications);
+      }
+    }, [user?.firstname, user?.preferences?.dailyNotifications, user?.preferences?.darkMode])
   );
 
   const handleLogout = async () => {
@@ -87,15 +97,32 @@ export default function ProfileScreen() {
     }
   };
 
-  const toggleLanguage = async (toPl: boolean) => {
-    await setLanguage(toPl ? 'pl' : 'en');
+  const selectLanguage = async (code: AppLanguage) => {
+    await setLanguage(code);
+    const response = await PreferencesService.setLanguage(code);
+    if (!response.success) {
+      showToast({ tone: 'error', message: t('profile.prefSyncError') });
+      return;
+    }
+    await refreshUser?.();
   };
 
   const toggleNotifications = async (enabled: boolean) => {
     setDailyNotifications(enabled);
     const ok = await NotificationService.setEnabled(enabled);
+    const response = await PreferencesService.setDailyNotifications(enabled);
+    if (!response.success) {
+      showToast({ tone: 'info', message: t('profile.prefSyncError') });
+    } else {
+      await refreshUser?.();
+    }
+    if (enabled && !NotificationService.isSupported()) {
+      showToast({ tone: 'info', message: t('profile.notificationsExpoGo') });
+      return;
+    }
     if (enabled && !ok) {
       setDailyNotifications(false);
+      await PreferencesService.setDailyNotifications(false);
       showToast({ tone: 'info', message: t('profile.notificationsDenied') });
       return;
     }
@@ -105,11 +132,28 @@ export default function ProfileScreen() {
     });
   };
 
+  const toggleDarkMode = async (enabled: boolean) => {
+    await setDarkMode(enabled);
+    const response = await PreferencesService.setDarkMode(enabled);
+    if (!response.success) {
+      showToast({ tone: 'info', message: t('profile.prefSyncError') });
+      return;
+    }
+    await refreshUser?.();
+    showToast({
+      tone: 'success',
+      message: enabled ? t('profile.darkModeOn') : t('profile.darkModeOff'),
+    });
+  };
+
   return (
-    <ScrollView style={gameStyles.screen} contentContainerStyle={gameStyles.scrollContent}>
-      <StatusBar style="dark" />
-      <View style={[gameStyles.topBar, { paddingHorizontal: 0 }]}>
-        <Text style={gameStyles.brand}>{t('profile.title')}</Text>
+    <ScrollView
+      style={[gameStyles.screen, { backgroundColor: colors.background }]}
+      contentContainerStyle={gameStyles.scrollContent}
+    >
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      <View style={[gameStyles.topBar, { paddingHorizontal: 0, backgroundColor: colors.background }]}>
+        <Text style={[gameStyles.brand, { color: colors.text }]}>{t('profile.title')}</Text>
       </View>
 
       <View style={[gameStyles.heroPanel, { backgroundColor: Brand.blue }]}>
@@ -123,23 +167,30 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      <View style={gameStyles.panel}>
+      <View style={[gameStyles.panel, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <XpBar
           level={stats?.level ?? 1}
           xpIntoLevel={stats?.xpIntoLevel ?? 0}
           xpPerLevel={stats?.xpPerLevel ?? 100}
         />
-        <Text style={[gameStyles.panelText, { marginTop: 10 }]}>
+        <Text style={[gameStyles.panelText, { marginTop: 10, color: colors.muted }]}>
           {t('home.bestStreak', { count: stats?.longestStreak ?? 0 })}
         </Text>
       </View>
 
-      <View style={gameStyles.panel}>
-        <Text style={gameStyles.panelTitle}>{t('profile.editName')}</Text>
+      <View style={[gameStyles.panel, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Text style={[gameStyles.panelTitle, { color: colors.text }]}>{t('profile.editName')}</Text>
         {editing ? (
           <>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input,
+                {
+                  color: colors.text,
+                  backgroundColor: colors.inputBackground,
+                  borderColor: colors.border,
+                },
+              ]}
               value={firstname}
               onChangeText={setFirstname}
               maxLength={50}
@@ -171,22 +222,67 @@ export default function ProfileScreen() {
         )}
       </View>
 
-      <View style={gameStyles.panel}>
+      <View style={[gameStyles.panel, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Text style={[gameStyles.panelTitle, { color: colors.text }]}>{t('profile.languageTitle')}</Text>
+        <Text style={[gameStyles.panelText, { color: colors.muted, marginBottom: 10 }]}>
+          {t('profile.languageHint')}
+        </Text>
+        <View style={styles.langRow}>
+          {LANGUAGE_OPTIONS.map((opt) => {
+            const active = language?.startsWith(opt.code);
+            return (
+              <TouchableOpacity
+                key={opt.code}
+                style={[
+                  styles.langChip,
+                  {
+                    borderColor: active ? Brand.green : colors.border,
+                    backgroundColor: active ? Brand.greenSoft : colors.inputBackground,
+                  },
+                ]}
+                onPress={() => selectLanguage(opt.code)}
+              >
+                <Text
+                  style={[
+                    styles.langChipText,
+                    { color: active ? Brand.greenDark : colors.text },
+                  ]}
+                >
+                  {t(opt.labelKey)}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+
+      <View style={[gameStyles.panel, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={[gameStyles.row, { justifyContent: 'space-between' }]}>
-          <Text style={gameStyles.panelTitle}>{t('profile.languagePl')}</Text>
+          <View style={{ flex: 1, paddingRight: 12 }}>
+            <Text style={[gameStyles.panelTitle, { color: colors.text }]}>
+              {t('profile.darkMode')}
+            </Text>
+            <Text style={[gameStyles.panelText, { color: colors.muted }]}>
+              {t('profile.darkModeHint')}
+            </Text>
+          </View>
           <Switch
-            value={language?.startsWith('pl')}
-            onValueChange={toggleLanguage}
+            value={darkMode}
+            onValueChange={toggleDarkMode}
             trackColor={{ true: Brand.green, false: '#CFCFCF' }}
           />
         </View>
       </View>
 
-      <View style={gameStyles.panel}>
+      <View style={[gameStyles.panel, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={[gameStyles.row, { justifyContent: 'space-between' }]}>
           <View style={{ flex: 1, paddingRight: 12 }}>
-            <Text style={gameStyles.panelTitle}>{t('profile.dailyNotifications')}</Text>
-            <Text style={gameStyles.panelText}>{t('profile.dailyNotificationsHint')}</Text>
+            <Text style={[gameStyles.panelTitle, { color: colors.text }]}>
+              {t('profile.dailyNotifications')}
+            </Text>
+            <Text style={[gameStyles.panelText, { color: colors.muted }]}>
+              {t('profile.dailyNotificationsHint')}
+            </Text>
           </View>
           <Switch
             value={dailyNotifications}
@@ -196,9 +292,20 @@ export default function ProfileScreen() {
         </View>
       </View>
 
+      <View style={[gameStyles.panel, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Text style={[gameStyles.panelTitle, { color: colors.text }]}>
+          {t('changePassword.title')}
+        </Text>
+        <PrimaryButton
+          title={t('profile.changePassword')}
+          variant="secondary"
+          onPress={() => router.push('/(app)/change-password')}
+        />
+      </View>
+
       <View style={gameStyles.lockedBanner}>
         <Text style={gameStyles.panelTitle}>
-          🚀 {t('profile.planTitle', { tier: (stats?.subscriptionTier || 'free').toUpperCase() })}
+          {t('profile.planTitle', { tier: (stats?.subscriptionTier || 'free').toUpperCase() })}
         </Text>
         <Text style={gameStyles.panelText}>{t('profile.plusTeaser')}</Text>
         <PrimaryButton
@@ -219,7 +326,7 @@ export default function ProfileScreen() {
           })
         }
       >
-        <Text style={styles.aboutLink}>{t('profile.about')}</Text>
+        <Text style={[styles.aboutLink, { color: colors.link }]}>{t('profile.about')}</Text>
       </TouchableOpacity>
 
       <PrimaryButton
@@ -245,19 +352,30 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 2,
-    borderColor: '#E5E5E5',
     borderRadius: 14,
     padding: 12,
     fontFamily: gameFonts.semi,
     fontSize: 16,
-    color: Brand.ink,
-    backgroundColor: '#fff',
   },
   aboutLink: {
     fontFamily: gameFonts.bold,
-    color: Brand.blue,
     textAlign: 'center',
     marginVertical: 14,
+    fontSize: 15,
+  },
+  langRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  langChip: {
+    borderWidth: 2,
+    borderRadius: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  langChipText: {
+    fontFamily: gameFonts.bold,
     fontSize: 15,
   },
 });

@@ -278,10 +278,26 @@
     "changePassword": "Change password",
     "planTitle": "Plan {{tier}}",
     "manageSubscription": "Subscription & payment",
+    "openReports": "Advanced reports (Pro)",
     "plusTeaser": "Plus/Pro unlocks AI insights and pattern reports. Demo payment is in the app.",
     "about": "About MoodDic",
     "aboutTitle": "MoodDic",
     "aboutBody": "Gamified mood journal · v{{version}}"
+  },
+  "reports": {
+    "title": "Reports",
+    "overview": "Overview",
+    "weekly": "Weekly average",
+    "distribution": "Mood distribution",
+    "aspects": "Aspect averages",
+    "rangeDays": "{{days}} days",
+    "average": "Average mood: {{value}} / 6",
+    "entries": "{{count}} entries",
+    "bestDay": "Best day: {{date}} ({{score}}/6)",
+    "worstDay": "Toughest day: {{date}} ({{score}}/6)",
+    "noData": "Not enough check-ins in this range yet.",
+    "lockedTitle": "Pro reports",
+    "lockedBody": "Weekly charts, aspect averages and mood distribution unlock on MoodDic Pro."
   },
   "subscription": {
     "title": "Subscription",

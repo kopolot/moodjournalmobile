@@ -78,6 +78,22 @@ export interface MoodAnalysis {
   generatedAt: string;
 }
 
+export interface AdvancedMoodReport {
+  unlocked: boolean;
+  tier: string;
+  rangeDays: number;
+  from: string;
+  to: string;
+  entryCount: number;
+  averageOverall: number | null;
+  weeklySeries: Array<{ weekStart: string; average: number | null; count: number }>;
+  aspectAverages: Array<{ aspect: string; average: number; samples: number }>;
+  moodDistribution: Array<{ score: number; count: number }>;
+  bestDay: { date: string; score: number } | null;
+  worstDay: { date: string; score: number } | null;
+  generatedAt: string;
+}
+
 export interface CreateMoodPayload {
   overallMood: number;
   aspects: Record<AspectKey, AspectValue>;
@@ -143,6 +159,24 @@ export class MoodService {
       return { analysis: null, locked: true, message: code };
     }
     return { analysis: null, locked: false, message: code || undefined };
+  }
+
+  static async getAdvancedReport(days: 30 | 90 = 30): Promise<{
+    report: AdvancedMoodReport | null;
+    locked: boolean;
+    message?: string;
+  }> {
+    const response = await apiClient.get<ApiResponse & { data: AdvancedMoodReport }>(
+      `${API_CONFIG.ENDPOINTS.MOOD.ADVANCED_REPORTS}?days=${days}`
+    );
+    if (response.success && response.data) {
+      return { report: response.data as AdvancedMoodReport, locked: false };
+    }
+    const code = response.message?.[0] || '';
+    if (code === 'mood.reports.locked') {
+      return { report: null, locked: true, message: code };
+    }
+    return { report: null, locked: false, message: code || undefined };
   }
 
   static async list(limit = 30, offset = 0): Promise<{ items: MoodEntry[]; total: number }> {

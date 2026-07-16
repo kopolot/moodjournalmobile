@@ -307,7 +307,17 @@ export default function ProfileScreen() {
         <Text style={gameStyles.panelTitle}>
           {t('profile.planTitle', { tier: (stats?.subscriptionTier || 'free').toUpperCase() })}
         </Text>
-        <Text style={gameStyles.panelText}>{t('profile.plusTeaser')}</Text>
+        <Text style={gameStyles.panelText}>
+          {stats?.aiAnalysisUnlocked ? t('home.aiUnlocked') : t('profile.plusTeaser')}
+        </Text>
+        {stats?.aiAnalysisUnlocked ? (
+          <PrimaryButton
+            title={t('home.aiOpen')}
+            variant="light"
+            onPress={() => router.push('/(app)/ai-coach')}
+            style={{ marginTop: 12 }}
+          />
+        ) : null}
         <PrimaryButton
           title={t('profile.manageSubscription')}
           variant="light"

@@ -86,7 +86,75 @@
     "bestStreak": "Najlepsza seria: {{count}} dni",
     "aiTitle": "Trener AI nastroju",
     "aiTeaser": "MoodDic Plus/Pro odblokuje głębszą analizę AI wzorców — wejdź w Profil → Subskrypcja.",
-    "aiUnlocked": "Plan Plus/Pro aktywny — analysis AI (placeholder) jest odblokowane."
+    "aiUnlocked": "Plan Plus/Pro aktywny — otwórz osobisty raport coachingowy.",
+    "aiNeedMore": "{{count}}/{{min}} check-inów — jeszcze kilka i coaching będzie pełny.",
+    "aiOpen": "Otwórz trenera →",
+    "aiUpgrade": "Odblokuj Plus/Pro →"
+  },
+  "analysis": {
+    "title": "Trener AI",
+    "needMoreTitle": "Prawie gotowe",
+    "needMoreBody": "Masz {{count}} check-inów. Zaloguj co najmniej {{min}}, żeby trener złapał wzorce.",
+    "highlights": "Wyróżnienia",
+    "aspects": "Obszary życia",
+    "coaching": "Wskazówki coachingowe",
+    "refresh": "Odśwież analizę",
+    "loadError": "Nie udało się wczytać analizy.",
+    "meta": "{{entries}} wpisów · {{days}} dni · trend: {{trend}}",
+    "trend": {
+      "improving": "wzrostowy",
+      "declining": "spadkowy",
+      "stable": "stabilny",
+      "insufficient_data": "za mało danych"
+    },
+    "summary": {
+      "improving": "Twój trend nastroju rośnie 📈",
+      "declining": "Twój trend nastroju potrzebuje opieki 💛",
+      "stable": "Twój nastrój jest dość stabilny",
+      "detail": "Średnia {{average}}/6 z {{entries}} check-inów w {{days}} dniach."
+    },
+    "highlight": {
+      "strength": "Siła: {{aspect}} średnio {{average}}/6",
+      "focus": "Do pracy: {{aspect}} średnio {{average}}/6",
+      "latest": "Ostatni nastrój ogólny: {{score}}/6 ({{date}})",
+      "volatility": "Wahania nastroju są ostatnio większe niż zwykle",
+      "trendUp": "Ostatnie dni wyglądają lepiej niż początek okna",
+      "trendDown": "Ostatnie dni są łagodniejsze niż wcześniej w oknie"
+    },
+    "tip": {
+      "needMore": {
+        "title": "Loguj dalej",
+        "body": "Dodaj jeszcze {{needed}} check-in(y), żeby odblokować pełny coaching (min. {{min}})."
+      },
+      "focusAspect": {
+        "title": "Zaopiekuj się: {{aspect}}",
+        "body": "Ten obszar ma średnią {{average}}/6. Jedna mała, świadoma decyzja dziś może pomóc."
+      },
+      "trendDown": {
+        "title": "Delikatny reset",
+        "body": "Ostatnia średnia spadła. Krótki spacer, sen albo lżejszy dzień mogą ustabilizować krzywą."
+      },
+      "trendUp": {
+        "title": "Jedź na fali wzrostu",
+        "body": "Jest lepiej — trzymaj nawyki, które działają, i zanotuj, co pomogło."
+      },
+      "volatility": {
+        "title": "Wygładź wahania",
+        "body": "Widać duże skoki dzień do dnia. Kotwice jak stała pora snu albo krótki journaling pomagają."
+      },
+      "strength": {
+        "title": "Wesprzyj się na: {{aspect}}",
+        "body": "To względna siła — użyj jej jako oparcia, gdy inne obszary są ciężkie."
+      },
+      "streak": {
+        "title": "Seria {{streak}} dni!",
+        "body": "Regularność zasila lepsze insighty. Chroń serię szybkim check-inem."
+      },
+      "buildStreak": {
+        "title": "Zbuduj serię",
+        "body": "Codzienne check-iny ostrzą coaching. Celuj w kilka dni z rzędu."
+      }
+    }
   },
   "history": {
     "title": "Historia",

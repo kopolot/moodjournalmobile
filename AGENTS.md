@@ -62,7 +62,7 @@ npm run test:watch    # interactive
 ## Product / UX notes
 
 - First-session vibe: playful, streak/XP heavy (Duolingo-inspired), green-first brand — avoid purple AI defaults and cream/serif terracotta looks
-- Plus / AI analysis is **teaser only** until billing + backend AI exist
+- Plus / AI analysis: `GET /mood/analysis` + `app/(app)/ai-coach.tsx` (pattern engine; gated by Plus/Pro)
 - Prefer i18n keys over hardcoded PL/EN strings in new UI
 
 ## Do not

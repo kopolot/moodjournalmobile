@@ -133,6 +133,7 @@ export const API_CONFIG = {
       CREATE: '/mood',
       STATS: '/mood/stats',
       CHECKIN_HINTS: '/mood/checkin-hints',
+      ANALYSIS: '/mood/analysis',
       DETAIL: (id: string) => `/mood/${id}`,
     },
     SUBSCRIPTION: {

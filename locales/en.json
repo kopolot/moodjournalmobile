@@ -86,7 +86,75 @@
     "bestStreak": "Best streak: {{count}} days",
     "aiTitle": "AI mood coach",
     "aiTeaser": "MoodDic Plus/Pro unlocks deeper AI pattern analysis — open Profile → Subscription.",
-    "aiUnlocked": "Plus/Pro is active — AI analysis (placeholder) is unlocked."
+    "aiUnlocked": "Plus/Pro is active — open your personal coaching report.",
+    "aiNeedMore": "{{count}}/{{min}} check-ins logged — a few more unlock full coaching.",
+    "aiOpen": "Open coach →",
+    "aiUpgrade": "Unlock with Plus/Pro →"
+  },
+  "analysis": {
+    "title": "AI coach",
+    "needMoreTitle": "Almost ready",
+    "needMoreBody": "You have {{count}} check-ins. Log at least {{min}} so the coach can spot patterns.",
+    "highlights": "Highlights",
+    "aspects": "Life areas",
+    "coaching": "Coaching tips",
+    "refresh": "Refresh analysis",
+    "loadError": "Could not load analysis.",
+    "meta": "{{entries}} entries · {{days}} days · trend: {{trend}}",
+    "trend": {
+      "improving": "improving",
+      "declining": "declining",
+      "stable": "stable",
+      "insufficient_data": "need more data"
+    },
+    "summary": {
+      "improving": "Your mood trend is climbing 📈",
+      "declining": "Your mood trend needs care 💛",
+      "stable": "Your mood has been fairly steady",
+      "detail": "Average {{average}}/6 across {{entries}} check-ins in {{days}} days."
+    },
+    "highlight": {
+      "strength": "Strength: {{aspect}} averages {{average}}/6",
+      "focus": "Focus area: {{aspect}} averages {{average}}/6",
+      "latest": "Latest overall mood: {{score}}/6 ({{date}})",
+      "volatility": "Mood swings are higher than usual lately",
+      "trendUp": "Recent days look better than the start of the window",
+      "trendDown": "Recent days look softer than earlier in the window"
+    },
+    "tip": {
+      "needMore": {
+        "title": "Keep logging",
+        "body": "Add {{needed}} more check-in(s) to unlock full coaching (min {{min}})."
+      },
+      "focusAspect": {
+        "title": "Tend to {{aspect}}",
+        "body": "This area averages {{average}}/6. One small intentional action today can help."
+      },
+      "trendDown": {
+        "title": "Gentle reset",
+        "body": "Your recent average dipped. Short walks, sleep, or a lighter day can stabilize the curve."
+      },
+      "trendUp": {
+        "title": "Ride the upward wave",
+        "body": "Things are improving — keep the habits that worked and note what helped."
+      },
+      "volatility": {
+        "title": "Smooth the swings",
+        "body": "Big day-to-day jumps showed up. Anchors like a fixed bedtime or short journaling help."
+      },
+      "strength": {
+        "title": "Lean on {{aspect}}",
+        "body": "This is a relative strength — use it as support when other areas feel heavy."
+      },
+      "streak": {
+        "title": "{{streak}}-day streak!",
+        "body": "Consistency fuels better insights. Protect the streak with a quick check-in."
+      },
+      "buildStreak": {
+        "title": "Build a streak",
+        "body": "Daily check-ins make coaching sharper. Aim for a few days in a row."
+      }
+    }
   },
   "history": {
     "title": "History",

@@ -95,6 +95,12 @@ export default function AppLayout() {
           }}
         />
         <Tabs.Screen
+          name="ai-coach"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
           name="change-password"
           options={{
             href: null,

@@ -101,6 +101,8 @@
     "refresh": "Refresh analysis",
     "loadError": "Could not load analysis.",
     "meta": "{{entries}} entries · {{days}} days · trend: {{trend}}",
+    "engineLlm": "LLM narrative",
+    "narrativeTips": "Coach notes",
     "trend": {
       "improving": "improving",
       "declining": "declining",

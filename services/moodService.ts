@@ -69,6 +69,11 @@ export interface MoodAnalysis {
     detailKey: string;
     params?: Record<string, string | number>;
   } | null;
+  narrative?: {
+    headline?: string | null;
+    detail?: string | null;
+    tips?: string[];
+  } | null;
   trend: string;
   averageOverall: number | null;
   volatility?: string;

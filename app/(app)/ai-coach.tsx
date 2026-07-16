@@ -151,14 +151,16 @@ export default function AiCoachScreen() {
             <>
               <View style={gameStyles.heroPanel}>
                 <Text style={gameStyles.heroTitle}>
-                  {tipText(t, analysis.summary?.headlineKey || 'analysis.summary.stable')}
+                  {analysis.narrative?.headline ||
+                    tipText(t, analysis.summary?.headlineKey || 'analysis.summary.stable')}
                 </Text>
                 <Text style={gameStyles.heroSubtitle}>
-                  {tipText(
-                    t,
-                    analysis.summary?.detailKey || 'analysis.summary.detail',
-                    analysis.summary?.params
-                  )}
+                  {analysis.narrative?.detail ||
+                    tipText(
+                      t,
+                      analysis.summary?.detailKey || 'analysis.summary.detail',
+                      analysis.summary?.params
+                    )}
                 </Text>
                 <Text style={[local.meta, { color: colors.onPrimary ?? '#fff' }]}>
                   {t('analysis.meta', {
@@ -166,8 +168,20 @@ export default function AiCoachScreen() {
                     days: analysis.windowDays,
                     trend: t(`analysis.trend.${analysis.trend}`),
                   })}
+                  {analysis.engine === 'pattern+llm' ? ` · ${t('analysis.engineLlm')}` : ''}
                 </Text>
               </View>
+
+              {analysis.narrative?.tips && analysis.narrative.tips.length > 0 ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>{t('analysis.narrativeTips')}</Text>
+                  {analysis.narrative.tips.map((tip, idx) => (
+                    <Text key={`n-${idx}`} style={[styles.panelText, { marginTop: idx ? 8 : 0 }]}>
+                      • {tip}
+                    </Text>
+                  ))}
+                </View>
+              ) : null}
 
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>{t('analysis.highlights')}</Text>

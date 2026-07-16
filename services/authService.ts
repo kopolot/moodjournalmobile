@@ -14,7 +14,7 @@ export interface User {
   email: string;
   createdAt: string;
   updatedAt: string;
-  isVerfified: boolean;
+  isVerified: boolean;
   isActive: boolean;
   lastLogin: string;
   preferences: UserPreferences | null;

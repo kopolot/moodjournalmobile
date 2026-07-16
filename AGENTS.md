@@ -28,7 +28,7 @@ If Expo CLI prints `UnexpectedServerData: No returned query result`, logout (`np
 
 Logic lives in `config/appConfig.ts`. Physical devices need the machine LAN IP (via Metro `hostUri`) and API on port **8080**. Override with `EXPO_PUBLIC_API_URL`.
 
-Login body: `{ email, password }`. Token: `data.jwt_token`.
+Login body: `{ email, password }`. Token: `data.jwt_token`. User field from API: **`isVerified`** (not a typo'd variant).
 
 Mood endpoints: see `API_CONFIG.ENDPOINTS.MOOD` in `config/appConfig.ts` and `services/moodService.ts`.
 
@@ -40,12 +40,24 @@ Aspect keys (must match API): `close_relationships`, `romantic_relationships`, `
 |------|--------|
 | Auth screens | `app/(auth)/` |
 | Signed-in tabs | `app/(app)/` — `index`, `history`, `mood-note`, `profile` |
-| Root providers | `app/_layout.tsx` (Nunito fonts + Auth/I18n) |
+| Root providers | `app/_layout.tsx` (Nunito fonts + Auth/I18n/Theme/Feedback) |
 | HTTP | `services/apiClient.ts`, `authService.ts`, `moodService.ts` |
 | Gamified UI | `components/game/`, `styles/gameStyles.ts`, `styles/colors.ts` |
 | Auth state | `contexts/AuthContext.tsx` (`refreshUser` available) |
 
 Legacy route `explore` redirects to `history` and stays hidden from the tab bar (`href: null`).
+
+## Tests
+
+```bash
+npm test              # CI mode: jest --watchAll=false --forceExit
+npm run test:watch    # interactive
+```
+
+- Global setup: `jest.setup.ts` (AsyncStorage mock, haptics, expo-constants, …)
+- Helpers: `__tests__/testUtils/` (`renderWithProviders`, fixtures)
+- Layers: `__tests__/unit/`, `__tests__/integration/` (axios-mock-adapter), `__tests__/e2e/` (provider/screen flows — not Detox/Maestro)
+- Prefer covering `isNoteRequiredForScore`, `MoodService`, auth session, and the mood-note wizard over placeholder suites
 
 ## Product / UX notes
 
@@ -63,4 +75,4 @@ Legacy route `explore` redirects to `history` and stays hidden from the tab bar 
 
 ## Commits
 
-Scope mobile work clearly (`feat(mood):`, `chore:`, `fix:`). Stage named files; keep lockfile policy as in `.gitignore` (`package-lock.json` is ignored in this repo).
+Scope mobile work clearly (`feat(mood):`, `chore:`, `fix:`, `test:`). Stage named files; keep lockfile policy as in `.gitignore` (`package-lock.json` is ignored in this repo).

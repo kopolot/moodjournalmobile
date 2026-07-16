@@ -1,0 +1,15 @@
+---
+description: Expo / React Native conventions for this app
+globs: "{app,components,contexts,services,hooks,utils,config}/**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# Mobile app conventions
+
+- Navigation: Expo Router only — no direct `@react-navigation/*` imports.
+- HTTP: go through `apiClient` / domain services; attach Bearer from AsyncStorage; mood create needs `Idempotency-Key`.
+- Auth: login returns `ApiResponse`; JWT key is `data.jwt_token`; profile field is `isVerified`.
+- Mood notes: use `isNoteRequiredForScore` + check-in hints; cold start / noticeable drop / deviation drive required notes.
+- UI feedback: prefer `FeedbackContext` / `utils/alert` over raw `Alert.alert` when web matters.
+- i18n: add keys to `locales/en.json` and `locales/pl.json` together.
+- Tests that touch Theme/I18n/AsyncStorage need `jest.setup.ts` mocks or `renderWithProviders`.

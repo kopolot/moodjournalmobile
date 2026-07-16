@@ -8,7 +8,10 @@ alwaysApply: true
 Expo SDK 57 client for MoodDic. API lives in `moodjournal` on GitHub.
 
 - Mood check-ins sync via `/mood` (`services/moodService.ts`) — do not keep new flows local-only.
+- Aspects: 8 life keys in `APP_LOGIC_CONFIG.specificMoods` + separate overall mood — must match API.
 - Use Expo Router navigation helpers — never import `@react-navigation/*` in app code.
 - Prefer `npm start` (LAN) or `npm run start:offline` for device work; install with `--legacy-peer-deps`.
 - Resolve API URL via `config/appConfig.ts` / `EXPO_PUBLIC_API_URL` (port 8080).
+- Tests: `npm test` (Jest + `jest.setup.ts`). Prefer domain/unit/integration over placeholders.
 - Keep the gamified green brand unless asked otherwise. No project-scoped MCP required.
+- Full agent map: `AGENTS.md`.

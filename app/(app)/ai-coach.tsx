@@ -41,7 +41,7 @@ function tipText(
 }
 
 export default function AiCoachScreen() {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const router = useRouter();
   const { styles, statusBar, colors } = useGameStyles();
   const [analysis, setAnalysis] = useState<MoodAnalysis | null>(null);
@@ -50,12 +50,15 @@ export default function AiCoachScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async (refresh = false) => {
-    const result = await MoodService.getAnalysis(refresh);
-    setLocked(result.locked);
-    setAnalysis(result.analysis);
-    setError(result.locked ? null : result.message || null);
-  }, []);
+  const load = useCallback(
+    async (refresh = false) => {
+      const result = await MoodService.getAnalysis(refresh, language);
+      setLocked(result.locked);
+      setAnalysis(result.analysis);
+      setError(result.locked ? null : result.message || null);
+    },
+    [language]
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -65,9 +68,13 @@ export default function AiCoachScreen() {
   );
 
   const onRefresh = async () => {
+    if (refreshing) return;
     setRefreshing(true);
-    await load(true);
-    setRefreshing(false);
+    try {
+      await load(true);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const renderAspectRow = (insight: MoodAspectInsight) => {
@@ -151,14 +158,16 @@ export default function AiCoachScreen() {
             <>
               <View style={gameStyles.heroPanel}>
                 <Text style={gameStyles.heroTitle}>
-                  {tipText(t, analysis.summary?.headlineKey || 'analysis.summary.stable')}
+                  {analysis.narrative?.headline ||
+                    tipText(t, analysis.summary?.headlineKey || 'analysis.summary.stable')}
                 </Text>
                 <Text style={gameStyles.heroSubtitle}>
-                  {tipText(
-                    t,
-                    analysis.summary?.detailKey || 'analysis.summary.detail',
-                    analysis.summary?.params
-                  )}
+                  {analysis.narrative?.detail ||
+                    tipText(
+                      t,
+                      analysis.summary?.detailKey || 'analysis.summary.detail',
+                      analysis.summary?.params
+                    )}
                 </Text>
                 <Text style={[local.meta, { color: colors.onPrimary ?? '#fff' }]}>
                   {t('analysis.meta', {
@@ -166,8 +175,28 @@ export default function AiCoachScreen() {
                     days: analysis.windowDays,
                     trend: t(`analysis.trend.${analysis.trend}`),
                   })}
+                  {analysis.engine === 'pattern+llm' ? ` · ${t('analysis.engineLlm')}` : ''}
                 </Text>
               </View>
+
+              <PrimaryButton
+                title={t('analysis.refresh')}
+                onPress={onRefresh}
+                variant="secondary"
+                loading={refreshing}
+                style={{ marginBottom: 4 }}
+              />
+
+              {analysis.narrative?.tips && analysis.narrative.tips.length > 0 ? (
+                <View style={styles.panel}>
+                  <Text style={styles.panelTitle}>{t('analysis.narrativeTips')}</Text>
+                  {analysis.narrative.tips.map((tip, idx) => (
+                    <Text key={`n-${idx}`} style={[styles.panelText, { marginTop: idx ? 8 : 0 }]}>
+                      • {tip}
+                    </Text>
+                  ))}
+                </View>
+              ) : null}
 
               <View style={styles.panel}>
                 <Text style={styles.panelTitle}>{t('analysis.highlights')}</Text>
@@ -196,12 +225,6 @@ export default function AiCoachScreen() {
                   </View>
                 ))}
               </View>
-
-              <PrimaryButton
-                title={t('analysis.refresh')}
-                onPress={onRefresh}
-                variant="secondary"
-              />
             </>
           )}
 

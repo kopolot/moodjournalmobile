@@ -101,6 +101,8 @@
     "refresh": "Odśwież analizę",
     "loadError": "Nie udało się wczytać analizy.",
     "meta": "{{entries}} wpisów · {{days}} dni · trend: {{trend}}",
+    "engineLlm": "narracja LLM",
+    "narrativeTips": "Notatki trenera",
     "trend": {
       "improving": "wzrostowy",
       "declining": "spadkowy",

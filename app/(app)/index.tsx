@@ -14,7 +14,7 @@ import StreakFlame from '@/components/game/StreakFlame';
 export default function HomeScreen() {
   const { user } = useAuth();
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const { styles, statusBar } = useGameStyles();
   const [stats, setStats] = useState<MoodStats | null>(null);
   const [analysisPreview, setAnalysisPreview] = useState<MoodAnalysis | null>(null);
@@ -24,12 +24,12 @@ export default function HomeScreen() {
     const next = await MoodService.getStats();
     setStats(next);
     if (next?.aiAnalysisUnlocked) {
-      const { analysis } = await MoodService.getAnalysis(false);
+      const { analysis } = await MoodService.getAnalysis(false, language);
       setAnalysisPreview(analysis);
     } else {
       setAnalysisPreview(null);
     }
-  }, []);
+  }, [language]);
 
   useFocusEffect(
     useCallback(() => {
@@ -111,14 +111,16 @@ export default function HomeScreen() {
           <Text style={styles.panelText}>
             {!stats?.aiAnalysisUnlocked
               ? t('home.aiTeaser')
-              : analysisPreview?.ready && analysisPreview.summary
-                ? t(analysisPreview.summary.headlineKey)
-                : analysisPreview && !analysisPreview.ready
-                  ? t('home.aiNeedMore', {
-                      count: analysisPreview.entryCount,
-                      min: analysisPreview.minEntries,
-                    })
-                  : t('home.aiUnlocked')}
+              : analysisPreview?.ready && analysisPreview.narrative?.headline
+                ? analysisPreview.narrative.headline
+                : analysisPreview?.ready && analysisPreview.summary
+                  ? t(analysisPreview.summary.headlineKey)
+                  : analysisPreview && !analysisPreview.ready
+                    ? t('home.aiNeedMore', {
+                        count: analysisPreview.entryCount,
+                        min: analysisPreview.minEntries,
+                      })
+                    : t('home.aiUnlocked')}
           </Text>
           <Text style={[styles.panelText, { marginTop: 8, fontWeight: '700' }]}>
             {stats?.aiAnalysisUnlocked ? t('home.aiOpen') : t('home.aiUpgrade')}

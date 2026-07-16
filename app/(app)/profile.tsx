@@ -319,6 +319,12 @@ export default function ProfileScreen() {
           />
         ) : null}
         <PrimaryButton
+          title={t('profile.openReports')}
+          variant="light"
+          onPress={() => router.push('/(app)/reports')}
+          style={{ marginTop: 12 }}
+        />
+        <PrimaryButton
           title={t('profile.manageSubscription')}
           variant="light"
           onPress={() => router.push('/(app)/subscription')}

@@ -134,6 +134,7 @@ export const API_CONFIG = {
       STATS: '/mood/stats',
       CHECKIN_HINTS: '/mood/checkin-hints',
       ANALYSIS: '/mood/analysis',
+      ADVANCED_REPORTS: '/mood/reports/advanced',
       DETAIL: (id: string) => `/mood/${id}`,
     },
     SUBSCRIPTION: {

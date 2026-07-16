@@ -278,10 +278,26 @@
     "changePassword": "Zmień hasło",
     "planTitle": "Plan {{tier}}",
     "manageSubscription": "Subskrypcja i płatność",
+    "openReports": "Zaawansowane raporty (Pro)",
     "plusTeaser": "Plus/Pro odblokowuje analizę AI i raporty wzorców. Płatność demo w aplikacji.",
     "about": "O MoodDic",
     "aboutTitle": "MoodDic",
     "aboutBody": "Zgamifikowany dziennik nastroju · v{{version}}"
+  },
+  "reports": {
+    "title": "Raporty",
+    "overview": "Przegląd",
+    "weekly": "Średnia tygodniowa",
+    "distribution": "Rozkład nastroju",
+    "aspects": "Średnie aspektów",
+    "rangeDays": "{{days}} dni",
+    "average": "Średni nastrój: {{value}} / 6",
+    "entries": "{{count}} wpisów",
+    "bestDay": "Najlepszy dzień: {{date}} ({{score}}/6)",
+    "worstDay": "Najtrudniejszy dzień: {{date}} ({{score}}/6)",
+    "noData": "Za mało check-inów w tym zakresie.",
+    "lockedTitle": "Raporty Pro",
+    "lockedBody": "Wykresy tygodniowe, średnie aspektów i rozkład nastroju odblokujesz w MoodDic Pro."
   },
   "subscription": {
     "title": "Subskrypcja",

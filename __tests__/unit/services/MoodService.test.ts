@@ -129,4 +129,27 @@ describe('MoodService', () => {
       `${API_CONFIG.ENDPOINTS.MOOD.ANALYSIS}?refresh=1`
     );
   });
+
+  it('fetches advanced reports and maps Pro lock', async () => {
+    const report = { unlocked: true, rangeDays: 30, entryCount: 2 };
+    (apiClient.get as jest.Mock).mockResolvedValueOnce({ success: true, data: report });
+
+    await expect(MoodService.getAdvancedReport(30)).resolves.toEqual({
+      report,
+      locked: false,
+    });
+    expect(apiClient.get).toHaveBeenCalledWith(
+      `${API_CONFIG.ENDPOINTS.MOOD.ADVANCED_REPORTS}?days=30`
+    );
+
+    (apiClient.get as jest.Mock).mockResolvedValueOnce({
+      success: false,
+      message: ['mood.reports.locked'],
+    });
+    await expect(MoodService.getAdvancedReport(90)).resolves.toEqual({
+      report: null,
+      locked: true,
+      message: 'mood.reports.locked',
+    });
+  });
 });

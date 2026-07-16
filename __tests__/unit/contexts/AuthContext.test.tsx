@@ -3,8 +3,12 @@ import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { AuthService } from '@/services/authService';
 import NetInfo from '@react-native-community/netinfo';
+import { makeUser } from '../../testUtils/fixtures';
 
-// Mockowanie AuthService
+function wrapper({ children }: { children: React.ReactNode }) {
+  return <AuthProvider>{children}</AuthProvider>;
+}
+
 jest.mock('@/services/authService', () => ({
   AuthService: {
     isAuthenticated: jest.fn(),
@@ -16,265 +20,147 @@ jest.mock('@/services/authService', () => ({
   },
 }));
 
-// Mockowanie NetInfo
+jest.mock('@/services/notificationService', () => ({
+  NotificationService: {
+    hydrateEnabled: jest.fn(() => Promise.resolve()),
+  },
+}));
+
+jest.mock('@/contexts/I18nContext', () => ({
+  useI18n: () => ({
+    language: 'en',
+    setLanguage: jest.fn(() => Promise.resolve()),
+    t: (key: string) => key,
+  }),
+}));
+
+jest.mock('@/contexts/ThemeContext', () => ({
+  useTheme: () => ({
+    darkMode: false,
+    scheme: 'light' as const,
+    colors: require('@/styles/colors').Colors.light,
+    setDarkMode: jest.fn(() => Promise.resolve()),
+    hydrateDarkMode: jest.fn(),
+  }),
+}));
+
 jest.mock('@react-native-community/netinfo', () => ({
   fetch: jest.fn(),
   addEventListener: jest.fn(),
 }));
 
-describe.skip('AuthContext - testy (wymagają dopięcia mocków NetInfo/AuthContext)', () => {
-  // Resetowanie wszystkich mocków przed każdym testem
+const mockUser = makeUser();
+
+describe('AuthContext — unit', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (NetInfo.addEventListener as jest.Mock).mockReturnValue(jest.fn());
   });
 
-  const mockUser = {
-    id: '1',
-    firstname: 'Test',
-    email: 'test@example.com',
-    createdAt: '2023-01-01',
-    updatedAt: '2023-01-01',
-    isVerfified: true,
-    isActive: true,
-    lastLogin: '2023-01-01',
-    preferences: null
-  };
+  it('starts logged out when there is no session', async () => {
+    (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(false);
+    (NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: true, isInternetReachable: true });
 
-  const waitForTimeout = 5000;
+    const { result } = renderHook(() => useAuth(), { wrapper });
 
-  const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <AuthProvider>{children}</AuthProvider>
-  );
-
-  // Mockowanie NetInfo
-  describe( 'app opened actions', () => {
-    it('powinien inicjalizować się z domyślnymi wartościami i sprawdzać uwierzytelnienie', async () => {
-      (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(false);
-      ( NetInfo.fetch as jest.Mock).mockResolvedValue({
-        isConnected: false
-      });
-      ( NetInfo.addEventListener as jest.Mock).mockImplementation((callback) => {
-        // callback({ isConnected: false });
-        return jest.fn();
-      });
-
-      // Renderowanie hooka w kontekście
-      const { result } = renderHook(() => useAuth(), { wrapper });
-      
-      // Początkowy stan - ładowanie powinno być true
-      expect(result.current.isLoading).toBe(true);
+    await waitFor(() => {
       expect(result.current.isLoggedIn).toBe(false);
-      expect(result.current.user).toBeNull();
-
-      // Oczekiwanie na zakończenie sprawdzania uwierzytelnienia
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: waitForTimeout });
-      
-      // Po sprawdzeniu - powinniśmy pozostać niezalogowani
-      expect(result.current.isLoggedIn).toBe(false);
-      expect(result.current.user).toBeNull();
-      expect(AuthService.isAuthenticated).toHaveBeenCalledTimes(1);
-      expect( NetInfo.fetch).toHaveBeenCalledTimes(1);
-      expect(result.current.isConnected).toBe(false);
-    }, waitForTimeout);
-
-    it('powinien załadować dane użytkownika, jeśli jest uwierzytelniony i online', async () => {
-      // Ustawienie mocków AuthService
-      (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(true);
-      (NetInfo.fetch as jest.Mock).mockResolvedValue({
-        isConnected: true,
-        isInternetReachable: true
-      });
-      (AuthService.loadCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-      ( NetInfo.addEventListener as jest.Mock).mockImplementation((callback) => {
-        // callback({ isConnected: true, isInternetReachable: true });
-        return jest.fn();
-      });
-      
-      // Renderowanie hooka w kontekście
-      const { result } = renderHook(() => useAuth(), { wrapper });
-
-      // Oczekiwanie na zakończenie sprawdzania uwierzytelnienia
-      await waitFor(() => {
-        console.log('isLoading', result.current.isLoading);
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: waitForTimeout });
-      
-      // Po sprawdzeniu - powinniśmy być zalogowani z danymi użytkownika
-      expect(result.current.isLoggedIn).toBe(true);
-      expect(result.current.user).toEqual(mockUser);
       expect(result.current.isConnected).toBe(true);
-      expect(AuthService.isAuthenticated).toHaveBeenCalledTimes(1);
-      expect(AuthService.loadCurrentUser).toHaveBeenCalledTimes(1);
-      expect( NetInfo.fetch).toHaveBeenCalledTimes(1);
-    }, waitForTimeout);
-
-    it('powinien załadować dane użytkownika, jeśli jest uwierzytelniony i offline', async () => {
-      // Ustawienie mocków AuthService
-      (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(true);
-      (NetInfo.fetch as jest.Mock).mockResolvedValue({
-        isConnected: false
-      });
-      (AuthService.loadCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-      
-      // Renderowanie hooka w kontekście
-      const { result } = renderHook(() => useAuth(), { wrapper });
-
-      // Oczekiwanie na zakończenie sprawdzania uwierzytelnienia
-      await waitFor(() => {
-        console.log('isLoading', result.current.isLoading);
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: waitForTimeout });
-      
-      // Po sprawdzeniu - powinniśmy być zalogowani z danymi użytkownika
-      expect(result.current.isLoggedIn).toBe(true);
-      expect(result.current.user).toEqual(mockUser);
-      expect(result.current.isConnected).toBe(false);
-      expect(AuthService.isAuthenticated).toHaveBeenCalledTimes(1);
-      expect(AuthService.loadCurrentUser).toHaveBeenCalledTimes(1);
-      expect( NetInfo.fetch).toHaveBeenCalledTimes(1);
-    }, waitForTimeout);
-
-    it('powinien obsłużyć błąd loadCurrentUser i spróbować getCurrentUser', async () => {
-      // Ustawienie mocków AuthService
-      (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(true);
-      (AuthService.loadCurrentUser as jest.Mock).mockRejectedValue(new Error('API Error'));
-      (AuthService.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-      (NetInfo.fetch as jest.Mock).mockResolvedValue({
-        isConnected: true
-      });
-      
-      // Renderowanie hooka w kontekście
-      const { result } = renderHook(() => useAuth(), { wrapper });
-
-      // Oczekiwanie na zakończenie sprawdzania uwierzytelnienia
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: waitForTimeout });
-      
-      // Po sprawdzeniu - powinniśmy być zalogowani z danymi użytkownika z getCurrentUser
-      expect(result.current.isLoggedIn).toBe(true);
-      expect(result.current.user).toEqual(mockUser);
-      expect(result.current.isConnected).toBe(true);
-      expect(AuthService.loadCurrentUser).toHaveBeenCalledTimes(1);
-      expect(AuthService.getCurrentUser).toHaveBeenCalledTimes(1);
-      expect( NetInfo.fetch).toHaveBeenCalledTimes(1);
-    }, waitForTimeout);
-  })
-
-  // tu trza zamienic na to ze jest sprawdzanie interneta
-  describe( 'login', () => {
-    it('powinien pomyślnie zalogować użytkownika', async () => {
-      // Ustawienie mocków AuthService
-      (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(false);
-      (AuthService.login as jest.Mock).mockResolvedValue(true);
-      (AuthService.loadCurrentUser as jest.Mock).mockResolvedValue(mockUser);
-      
-      // Renderowanie hooka w kontekście
-      const { result } = renderHook(() => useAuth(), { wrapper });
-
-      // Oczekiwanie na zakończenie początkowego sprawdzania uwierzytelnienia
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: waitForTimeout });
-      
-      // Wykonanie logowania
-      let success: boolean | undefined;
-      await act(async () => {
-        success = await result.current.login( mockUser.email, 'password123', true);
-      });
-      
-      // Sprawdzenie wyniku
-      expect(success).toBe(true);
-      expect(result.current.isLoggedIn).toBe(true);
-      expect(result.current.user).toEqual(mockUser);
-      expect(AuthService.login).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        password: 'password123',
-        remember_me: true
-      });
-      expect(AuthService.loadCurrentUser).toHaveBeenCalledTimes(1);
     });
 
-    it('powinien obsłużyć nieudane logowanie', async () => {
-      // Ustawienie mocków AuthService
-      (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(false);
-      (AuthService.login as jest.Mock).mockResolvedValue(false);
-      
-      // Renderowanie hooka w kontekście
-      const { result } = renderHook(() => useAuth(), { wrapper });
+    expect(result.current.user).toBeNull();
+    expect(AuthService.isAuthenticated).toHaveBeenCalled();
+  });
 
-      // Oczekiwanie na zakończenie początkowego sprawdzania uwierzytelnienia
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-      
-      // Wykonanie logowania
-      let success: boolean | undefined;
-      await act(async () => {
-        success = await result.current.login('wrong@example.com', 'wrongpass', false);
-      });
-      
-      // Sprawdzenie wyniku
-      expect(success).toBe(false);
-      expect(result.current.isLoggedIn).toBe(false);
-      expect(result.current.user).toBeNull();
-      expect(AuthService.loadCurrentUser).not.toHaveBeenCalled();
+  it('hydrates user when session exists', async () => {
+    (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(true);
+    (AuthService.loadCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: true, isInternetReachable: true });
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.isLoggedIn).toBe(true);
     });
 
-    it('powinien obsłużyć błąd podczas logowania', async () => {
-      // Ustawienie mocków AuthService
-      (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(false);
-      (AuthService.login as jest.Mock).mockRejectedValue(new Error('Login failed'));
-      
-      // Renderowanie hooka w kontekście
-      const { result } = renderHook(() => useAuth(), { wrapper });
+    expect(result.current.user).toEqual(mockUser);
+  });
 
-      // Oczekiwanie na zakończenie początkowego sprawdzania uwierzytelnienia
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      });
-      
-      // Wykonanie logowania i oczekiwanie na błąd
-      await expect(async () => {
-        await act(async () => {
-          await result.current.login('error@example.com', 'errorpass', false);
-        });
-      }).rejects.toThrow('Login failed');
-      
-      // Stan powinien pozostać niezalogowany
-      expect(result.current.isLoggedIn).toBe(false);
-      expect(result.current.user).toBeNull();
+  it('falls back to cached user when profile fetch fails', async () => {
+    (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(true);
+    (AuthService.loadCurrentUser as jest.Mock).mockRejectedValue(new Error('offline'));
+    (AuthService.getCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: false });
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => {
+      expect(result.current.user).toEqual(mockUser);
+    });
+  });
+
+  it('login stores user after successful API response', async () => {
+    (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(false);
+    (NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: true, isInternetReachable: true });
+    (AuthService.login as jest.Mock).mockResolvedValue({ success: true, data: { jwt_token: 'x' } });
+    (AuthService.loadCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => expect(result.current.isLoggedIn).toBe(false));
+
+    let response: Awaited<ReturnType<typeof result.current.login>>;
+    await act(async () => {
+      response = await result.current.login('test@example.com', 'password123', true);
     });
 
-  })
+    expect(response!.success).toBe(true);
+    expect(result.current.isLoggedIn).toBe(true);
+    expect(result.current.user).toEqual(mockUser);
+  });
 
-  describe( 'register', () => {
-    it('powinien pomyślnie zarejestrować użytkownika', async () => {
-      ( AuthService.isAuthenticated as jest.Mock).mockResolvedValue(false);
-      (AuthService.register as jest.Mock).mockResolvedValue(true);
+  it('register returns API response without logging in', async () => {
+    (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(false);
+    (NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: true, isInternetReachable: true });
+    (AuthService.register as jest.Mock).mockResolvedValue({
+      success: true,
+      message: ['user.register.success'],
+    });
 
-      // Renderowanie hooka w kontekście
-      const { result } = renderHook(() => useAuth(), { wrapper });
+    const { result } = renderHook(() => useAuth(), { wrapper });
 
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
-      }, { timeout: waitForTimeout });
+    await waitFor(() => expect(result.current.isLoggedIn).toBe(false));
 
-      // Wykonanie rejestracji
-      let success: boolean | undefined;
-      await act(async () => {
-        success = await result.current.register(
-          mockUser.firstname,
-          mockUser.email,
-          'password123',
-          'password123',
-          true
-        );
-      });
-      // Sprawdzenie wyniku
-      expect(success).toBe(true);
-    })
+    let response: Awaited<ReturnType<typeof result.current.register>>;
+    await act(async () => {
+      response = await result.current.register(
+        'test@example.com',
+        'password123',
+        'password123',
+        'Test',
+        true
+      );
+    });
+
+    expect(response!.success).toBe(true);
+    expect(result.current.isLoggedIn).toBe(false);
+  });
+
+  it('logout clears session state', async () => {
+    (AuthService.isAuthenticated as jest.Mock).mockResolvedValue(true);
+    (AuthService.loadCurrentUser as jest.Mock).mockResolvedValue(mockUser);
+    (NetInfo.fetch as jest.Mock).mockResolvedValue({ isConnected: true, isInternetReachable: true });
+    (AuthService.logout as jest.Mock).mockResolvedValue(true);
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+
+    await waitFor(() => expect(result.current.isLoggedIn).toBe(true));
+
+    await act(async () => {
+      await result.current.logout();
+    });
+
+    expect(result.current.isLoggedIn).toBe(false);
+    expect(result.current.user).toBeNull();
   });
 });

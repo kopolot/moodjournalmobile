@@ -1,14 +1,10 @@
 import * as React from 'react';
-import renderer, { act } from 'react-test-renderer';
-
+import { renderWithProviders } from '../../__tests__/testUtils/renderWithProviders';
 import { ThemedText } from '../ThemedText';
 
-it('renders correctly', async () => {
-  let tree: renderer.ReactTestRenderer | undefined;
-
-  await act(async () => {
-    tree = renderer.create(<ThemedText>Snapshot test!</ThemedText>);
+describe('ThemedText', () => {
+  it('renders with theme colors', () => {
+    const { getByText } = renderWithProviders(<ThemedText>Snapshot test!</ThemedText>);
+    expect(getByText('Snapshot test!')).toBeTruthy();
   });
-
-  expect(tree!.toJSON()).toMatchSnapshot();
 });

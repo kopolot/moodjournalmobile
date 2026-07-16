@@ -32,7 +32,7 @@ Login body: `{ email, password }`. Token: `data.jwt_token`.
 
 Mood endpoints: see `API_CONFIG.ENDPOINTS.MOOD` in `config/appConfig.ts` and `services/moodService.ts`.
 
-Aspect keys (must match API): `mood`, `relationship`, `activity`, `environment`.
+Aspect keys (must match API): `close_relationships`, `romantic_relationships`, `duties`, `physical_health`, `finances`, `relaxation`, `growth_spirituality`, `environment`. Overall mood is separate (`overallMood`).
 
 ## Layout map
 

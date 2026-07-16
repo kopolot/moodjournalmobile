@@ -10,12 +10,24 @@
     "android": "APP_ENV=dev expo start --lan --android",
     "ios": "expo start --lan --ios",
     "web": "expo start --lan --web",
-    "test": "jest --watchAll",
+    "test": "jest --watchAll=false --forceExit",
+    "test:watch": "jest --watchAll",
+    "test:ci": "jest --watchAll=false --forceExit --ci",
     "lint": "expo lint",
     "build-android": "eas build --local --platform=android --profile=preview --output=\"builds/build-$(date +%s).apk\""
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.ts"
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/$1"
+    },
+    "testMatch": [
+      "**/__tests__/**/*.(test|spec).(ts|tsx)",
+      "**/*.(test|spec).(ts|tsx)"
+    ]
   },
   "dependencies": {
     "@expo-google-fonts/nunito": "^0.4.2",

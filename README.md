@@ -43,7 +43,8 @@ npm start
 | `npm start` | Metro on LAN (`expo start --lan`) |
 | `npm run start:offline` | LAN without Expo cloud session |
 | `npm run start:tunnel` | Tunnel (needs valid Expo login) |
-| `npm test` | Jest (`--watchAll` by default) |
+| `npm test` | Jest (CI mode, non-interactive) |
+| `npm run test:watch` | Jest watch mode |
 | `npm run lint` | `expo lint` |
 
 Override API base URL:

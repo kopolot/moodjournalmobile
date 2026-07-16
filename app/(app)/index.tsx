@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
-import { MoodService, MoodStats } from '@/services/moodService';
+import { MoodAnalysis, MoodService, MoodStats } from '@/services/moodService';
 import { gameStyles } from '@/styles/gameStyles';
 import { useGameStyles } from '@/hooks/useGameStyles';
 import PrimaryButton from '@/components/game/PrimaryButton';
@@ -17,11 +17,18 @@ export default function HomeScreen() {
   const { t } = useI18n();
   const { styles, statusBar } = useGameStyles();
   const [stats, setStats] = useState<MoodStats | null>(null);
+  const [analysisPreview, setAnalysisPreview] = useState<MoodAnalysis | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
     const next = await MoodService.getStats();
     setStats(next);
+    if (next?.aiAnalysisUnlocked) {
+      const { analysis } = await MoodService.getAnalysis(false);
+      setAnalysisPreview(analysis);
+    } else {
+      setAnalysisPreview(null);
+    }
   }, []);
 
   useFocusEffect(
@@ -91,12 +98,32 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        <View style={styles.lockedBanner}>
+        <TouchableOpacity
+          style={styles.lockedBanner}
+          activeOpacity={0.85}
+          onPress={() =>
+            stats?.aiAnalysisUnlocked
+              ? router.push('/(app)/ai-coach')
+              : router.push('/(app)/subscription')
+          }
+        >
           <Text style={styles.panelTitle}>✨ {t('home.aiTitle')}</Text>
           <Text style={styles.panelText}>
-            {stats?.aiAnalysisUnlocked ? t('home.aiUnlocked') : t('home.aiTeaser')}
+            {!stats?.aiAnalysisUnlocked
+              ? t('home.aiTeaser')
+              : analysisPreview?.ready && analysisPreview.summary
+                ? t(analysisPreview.summary.headlineKey)
+                : analysisPreview && !analysisPreview.ready
+                  ? t('home.aiNeedMore', {
+                      count: analysisPreview.entryCount,
+                      min: analysisPreview.minEntries,
+                    })
+                  : t('home.aiUnlocked')}
           </Text>
-        </View>
+          <Text style={[styles.panelText, { marginTop: 8, fontWeight: '700' }]}>
+            {stats?.aiAnalysisUnlocked ? t('home.aiOpen') : t('home.aiUpgrade')}
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );

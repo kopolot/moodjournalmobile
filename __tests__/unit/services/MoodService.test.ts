@@ -100,4 +100,33 @@ describe('MoodService', () => {
 
     expect(await MoodService.remove('entry-1')).toBe(false);
   });
+
+  it('fetches mood analysis and maps locked responses', async () => {
+    const analysis = {
+      unlocked: true,
+      ready: true,
+      engine: 'pattern',
+      coachingTips: [],
+    };
+    (apiClient.get as jest.Mock).mockResolvedValueOnce({ success: true, data: analysis });
+
+    await expect(MoodService.getAnalysis()).resolves.toEqual({
+      analysis,
+      locked: false,
+    });
+    expect(apiClient.get).toHaveBeenCalledWith(API_CONFIG.ENDPOINTS.MOOD.ANALYSIS);
+
+    (apiClient.get as jest.Mock).mockResolvedValueOnce({
+      success: false,
+      message: ['mood.analysis.locked'],
+    });
+    await expect(MoodService.getAnalysis(true)).resolves.toEqual({
+      analysis: null,
+      locked: true,
+      message: 'mood.analysis.locked',
+    });
+    expect(apiClient.get).toHaveBeenLastCalledWith(
+      `${API_CONFIG.ENDPOINTS.MOOD.ANALYSIS}?refresh=1`
+    );
+  });
 });

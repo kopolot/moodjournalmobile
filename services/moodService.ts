@@ -32,6 +32,50 @@ export interface MoodStats {
   averageOverall7d: number | null;
   subscriptionTier: string;
   aiAnalysisUnlocked: boolean;
+  advancedReportsUnlocked?: boolean;
+}
+
+export interface MoodAnalysisTip {
+  id: string;
+  priority: 'high' | 'medium' | 'low' | string;
+  titleKey: string;
+  bodyKey: string;
+  params?: Record<string, string | number>;
+}
+
+export interface MoodAnalysisHighlight {
+  type: string;
+  titleKey: string;
+  params?: Record<string, string | number | null | undefined>;
+}
+
+export interface MoodAspectInsight {
+  aspect: AspectKey | string;
+  average: number;
+  samples: number;
+  status: 'strength' | 'focus' | 'neutral' | string;
+}
+
+export interface MoodAnalysis {
+  unlocked: boolean;
+  tier: string;
+  engine: string;
+  windowDays: number;
+  entryCount: number;
+  minEntries: number;
+  ready: boolean;
+  summary: {
+    headlineKey: string;
+    detailKey: string;
+    params?: Record<string, string | number>;
+  } | null;
+  trend: string;
+  averageOverall: number | null;
+  volatility?: string;
+  aspectInsights: MoodAspectInsight[];
+  coachingTips: MoodAnalysisTip[];
+  highlights: MoodAnalysisHighlight[];
+  generatedAt: string;
 }
 
 export interface CreateMoodPayload {
@@ -80,6 +124,25 @@ export class MoodService {
       return response.data as MoodStats;
     }
     return null;
+  }
+
+  static async getAnalysis(refresh = false): Promise<{
+    analysis: MoodAnalysis | null;
+    locked: boolean;
+    message?: string;
+  }> {
+    const url = refresh
+      ? `${API_CONFIG.ENDPOINTS.MOOD.ANALYSIS}?refresh=1`
+      : API_CONFIG.ENDPOINTS.MOOD.ANALYSIS;
+    const response = await apiClient.get<ApiResponse & { data: MoodAnalysis }>(url);
+    if (response.success && response.data) {
+      return { analysis: response.data as MoodAnalysis, locked: false };
+    }
+    const code = response.message?.[0] || '';
+    if (code === 'mood.analysis.locked') {
+      return { analysis: null, locked: true, message: code };
+    }
+    return { analysis: null, locked: false, message: code || undefined };
   }
 
   static async list(limit = 30, offset = 0): Promise<{ items: MoodEntry[]; total: number }> {

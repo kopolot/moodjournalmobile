@@ -120,13 +120,13 @@ describe('MoodService', () => {
       success: false,
       message: ['mood.analysis.locked'],
     });
-    await expect(MoodService.getAnalysis(true)).resolves.toEqual({
+    await expect(MoodService.getAnalysis(true, 'pl')).resolves.toEqual({
       analysis: null,
       locked: true,
       message: 'mood.analysis.locked',
     });
     expect(apiClient.get).toHaveBeenLastCalledWith(
-      `${API_CONFIG.ENDPOINTS.MOOD.ANALYSIS}?refresh=1`
+      `${API_CONFIG.ENDPOINTS.MOOD.ANALYSIS}?refresh=1&lang=pl`
     );
   });
 

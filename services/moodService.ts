@@ -60,6 +60,7 @@ export interface MoodAnalysis {
   unlocked: boolean;
   tier: string;
   engine: string;
+  locale?: string;
   windowDays: number;
   entryCount: number;
   minEntries: number;
@@ -147,13 +148,20 @@ export class MoodService {
     return null;
   }
 
-  static async getAnalysis(refresh = false): Promise<{
+  static async getAnalysis(
+    refresh = false,
+    lang?: string
+  ): Promise<{
     analysis: MoodAnalysis | null;
     locked: boolean;
     message?: string;
   }> {
-    const url = refresh
-      ? `${API_CONFIG.ENDPOINTS.MOOD.ANALYSIS}?refresh=1`
+    const params = new URLSearchParams();
+    if (refresh) params.set('refresh', '1');
+    if (lang) params.set('lang', lang.startsWith('pl') ? 'pl' : lang.startsWith('en') ? 'en' : lang);
+    const qs = params.toString();
+    const url = qs
+      ? `${API_CONFIG.ENDPOINTS.MOOD.ANALYSIS}?${qs}`
       : API_CONFIG.ENDPOINTS.MOOD.ANALYSIS;
     const response = await apiClient.get<ApiResponse & { data: MoodAnalysis }>(url);
     if (response.success && response.data) {

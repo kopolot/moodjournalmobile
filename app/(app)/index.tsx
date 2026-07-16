@@ -14,7 +14,7 @@ import StreakFlame from '@/components/game/StreakFlame';
 export default function HomeScreen() {
   const { user } = useAuth();
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const { styles, statusBar } = useGameStyles();
   const [stats, setStats] = useState<MoodStats | null>(null);
   const [analysisPreview, setAnalysisPreview] = useState<MoodAnalysis | null>(null);
@@ -24,12 +24,12 @@ export default function HomeScreen() {
     const next = await MoodService.getStats();
     setStats(next);
     if (next?.aiAnalysisUnlocked) {
-      const { analysis } = await MoodService.getAnalysis(false);
+      const { analysis } = await MoodService.getAnalysis(false, language);
       setAnalysisPreview(analysis);
     } else {
       setAnalysisPreview(null);
     }
-  }, []);
+  }, [language]);
 
   useFocusEffect(
     useCallback(() => {

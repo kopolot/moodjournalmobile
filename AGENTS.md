@@ -62,8 +62,12 @@ npm run test:watch    # interactive
 ## Product / UX notes
 
 - First-session vibe: playful, streak/XP heavy (Duolingo-inspired), green-first brand — avoid purple AI defaults and cream/serif terracotta looks
+<<<<<<< HEAD
 - Plus / AI analysis: `GET /mood/analysis` + `app/(app)/ai-coach.tsx` (pattern engine; gated by Plus/Pro)
 - Pro advanced reports: `GET /mood/reports/advanced` + `app/(app)/reports.tsx`
+=======
+- Billing: mock checkout when API has no Stripe keys; Stripe Checkout via `expo-web-browser` when `billingProvider=stripe`
+>>>>>>> 0c51a21 (feat(billing): open Stripe Checkout when API billingProvider is stripe)
 - Prefer i18n keys over hardcoded PL/EN strings in new UI
 
 ## Do not
